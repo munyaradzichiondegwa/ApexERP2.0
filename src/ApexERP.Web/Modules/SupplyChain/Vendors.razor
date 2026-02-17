@@ -1,0 +1,18 @@
+@page "/supply/vendors"
+@attribute [Authorize]
+<PageTitle>Vendors - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#128666; Vendor Management</h1>
+    <button class="btn-primary">+ Add Vendor</button>
+</div>
+
+<table class="apex-table">
+    <thead><tr><th>Vendor ID</th><th>Name</th><th>Category</th><th>Contact</th><th>Rating</th><th>Status</th></tr></thead>
+    <tbody>
+        <tr><td>V001</td><td>ABC Supplies</td><td>Office Supplies</td><td>info@abcsupplies.com</td><td>&#11088;&#11088;&#11088;&#11088;</td><td><span class="badge badge-success">Active</span></td></tr>
+        <tr><td>V002</td><td>XYZ Logistics</td><td>Transport</td><td>ops@xyzlogistics.com</td><td>&#11088;&#11088;&#11088;</td><td><span class="badge badge-success">Active</span></td></tr>
+        <tr><td>V003</td><td>Tech Vendors Ltd</td><td>IT Equipment</td><td>sales@techvendors.com</td><td>&#11088;&#11088;&#11088;&#11088;&#11088;</td><td><span class="badge badge-success">Active</span></td></tr>
+        <tr><td>V004</td><td>Global Parts Co</td><td>Manufacturing</td><td>orders@globalparts.com</td><td>&#11088;&#11088;</td><td><span class="badge badge-warning">Under Review</span></td></tr>
+    </tbody>
+</table>

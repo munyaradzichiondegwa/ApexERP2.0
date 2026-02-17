@@ -1,0 +1,61 @@
+@page "/inventory/stock"
+@attribute [Authorize]
+<PageTitle>Stock - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#128230; Stock Tracking</h1>
+    <button class="btn-primary">+ Add Item</button>
+</div>
+
+<div class="filter-bar">
+    <input class="apex-input" placeholder="Search stock..." @bind="search" />
+    <select class="apex-select" @bind="catFilter">
+        <option value="">All Categories</option>
+        <option>Electronics</option><option>Office</option><option>Raw Materials</option><option>Consumables</option>
+    </select>
+</div>
+
+<table class="apex-table">
+    <thead><tr><th>SKU</th><th>Item</th><th>Category</th><th>Qty</th><th>Reorder Level</th><th>Unit Cost</th><th>Status</th></tr></thead>
+    <tbody>
+        @foreach (var item in Filtered)
+        {
+            <tr>
+                <td>@item.SKU</td><td>@item.Name</td><td>@item.Category</td>
+                <td class="@(item.Qty <= item.ReorderLevel ? "text-negative" : "")">@item.Qty</td>
+                <td>@item.ReorderLevel</td>
+                <td>@item.UnitCost.ToString("C")</td>
+                <td><span class="badge @(item.Qty <= item.ReorderLevel ? "badge-danger" : "badge-success")">
+                    @(item.Qty <= item.ReorderLevel ? "Low Stock" : "In Stock")
+                </span></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private string search = "", catFilter = "";
+
+    private List<StockItem> items = new()
+    {
+        new() { SKU="SKU001", Name="Laptop Dell XPS", Category="Electronics", Qty=42, ReorderLevel=10, UnitCost=1200 },
+        new() { SKU="SKU002", Name="Office Chair", Category="Office", Qty=8, ReorderLevel=10, UnitCost=350 },
+        new() { SKU="SKU003", Name="Steel Rods 10mm", Category="Raw Materials", Qty=2400, ReorderLevel=500, UnitCost=4.5m },
+        new() { SKU="SKU004", Name="Printer Paper A4", Category="Consumables", Qty=120, ReorderLevel=200, UnitCost=8 },
+        new() { SKU="SKU005", Name="Network Switch 24-Port", Category="Electronics", Qty=15, ReorderLevel=5, UnitCost=480 },
+    };
+
+    private IEnumerable<StockItem> Filtered => items.Where(i =>
+        (string.IsNullOrEmpty(search) || i.Name.Contains(search, StringComparison.OrdinalIgnoreCase)) &&
+        (string.IsNullOrEmpty(catFilter) || i.Category == catFilter));
+
+    private class StockItem
+    {
+        public string SKU { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Category { get; set; } = "";
+        public int Qty { get; set; }
+        public int ReorderLevel { get; set; }
+        public decimal UnitCost { get; set; }
+    }
+}

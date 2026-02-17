@@ -1,0 +1,18 @@
+@page "/crm/customers"
+@attribute [Authorize]
+<PageTitle>Customers - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#128101; Customer Management</h1>
+    <button class="btn-primary">+ Add Customer</button>
+</div>
+
+<table class="apex-table">
+    <thead><tr><th>ID</th><th>Customer</th><th>Industry</th><th>Contact</th><th>Revenue YTD</th><th>Status</th></tr></thead>
+    <tbody>
+        <tr><td>C001</td><td>GlobalTech Inc</td><td>Technology</td><td>contact@globaltech.com</td><td>$240,000</td><td><span class="badge badge-success">Active</span></td></tr>
+        <tr><td>C002</td><td>Retail Corp</td><td>Retail</td><td>orders@retailcorp.com</td><td>$88,000</td><td><span class="badge badge-success">Active</span></td></tr>
+        <tr><td>C003</td><td>Startup Hub</td><td>Startup</td><td>hello@startuphub.io</td><td>$24,000</td><td><span class="badge badge-warning">At Risk</span></td></tr>
+        <tr><td>C004</td><td>BuildRight Co</td><td>Construction</td><td>procurement@buildright.com</td><td>$0</td><td><span class="badge badge-info">Prospect</span></td></tr>
+    </tbody>
+</table>

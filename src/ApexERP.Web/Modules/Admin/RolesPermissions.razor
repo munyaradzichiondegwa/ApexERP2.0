@@ -1,0 +1,71 @@
+@page "/admin/roles"
+@attribute [Authorize]
+<PageTitle>Roles and Permissions - ApexERP</PageTitle>
+<div class="apex-page-header">
+    <h1>&#128274; Roles and Permissions</h1>
+    <button class="btn-primary">+ New Role</button>
+</div>
+<div class="dashboard-grid">
+    <div class="dash-panel">
+        <div class="panel-header">Roles</div>
+        <table class="apex-table">
+            <thead><tr><th>Role</th><th>Users</th><th>Access Level</th></tr></thead>
+            <tbody>
+                @foreach (var r in roles)
+                {
+                    <tr style="cursor:pointer;background:@(selectedRole==r.Name?"#eff6ff":"");" @onclick="() => selectedRole = r.Name">
+                        <td><strong>@r.Name</strong></td>
+                        <td>@r.UserCount</td>
+                        <td><span class="badge @r.BadgeClass">@r.Level</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="dash-panel">
+        <div class="panel-header">Permissions — @selectedRole</div>
+        <table class="apex-table">
+            <thead><tr><th>Module</th><th>View</th><th>Create</th><th>Edit</th><th>Delete</th><th>Approve</th></tr></thead>
+            <tbody>
+                @foreach (var p in permissions)
+                {
+                    <tr>
+                        <td><strong>@p.Module</strong></td>
+                        <td><input type="checkbox" checked="@p.View" /></td>
+                        <td><input type="checkbox" checked="@p.Create" /></td>
+                        <td><input type="checkbox" checked="@p.Edit" /></td>
+                        <td><input type="checkbox" checked="@p.Delete" /></td>
+                        <td><input type="checkbox" checked="@p.Approve" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@code {
+    private string selectedRole = "Super Admin";
+    private List<RoleModel> roles = new()
+    {
+        new("Super Admin", 2, "Full Access", "badge-danger"),
+        new("Finance Manager", 3, "Module Admin", "badge-warning"),
+        new("HR Manager", 2, "Module Admin", "badge-warning"),
+        new("Operations Manager", 4, "Standard", "badge-info"),
+        new("Data Entry", 5, "Limited", "badge-success"),
+        new("Viewer", 3, "Read Only", "badge-success"),
+    };
+    private List<PermissionModel> permissions = new()
+    {
+        new("Finance", true, true, true, true, true),
+        new("Human Resources", true, true, true, false, true),
+        new("Supply Chain", true, true, true, false, true),
+        new("Inventory", true, true, true, false, false),
+        new("CRM", true, true, true, false, false),
+        new("Projects", true, true, true, false, false),
+        new("Assets", true, true, false, false, false),
+        new("Admin", true, false, false, false, false),
+    };
+    private class RoleModel { public string Name{get;set;}=""; public int UserCount{get;set;} public string Level{get;set;}=""; public string BadgeClass{get;set;}="";
+        public RoleModel(string n, int u, string l, string b){Name=n;UserCount=u;Level=l;BadgeClass=b;} }
+    private class PermissionModel { public string Module{get;set;}=""; public bool View{get;set;} public bool Create{get;set;} public bool Edit{get;set;} public bool Delete{get;set;} public bool Approve{get;set;}
+        public PermissionModel(string m, bool v, bool c, bool e, bool d, bool a){Module=m;View=v;Create=c;Edit=e;Delete=d;Approve=a;} }
+}

@@ -1,0 +1,24 @@
+@page "/finance/accounts-receivable"
+@attribute [Authorize]
+<PageTitle>Accounts Receivable - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#128180; Accounts Receivable</h1>
+    <button class="btn-primary">+ New Invoice</button>
+</div>
+
+<div class="summary-row">
+    <div class="summary-card"><span>Total Receivable</span><strong>$540,200</strong></div>
+    <div class="summary-card"><span>Due This Week</span><strong>$88,000</strong></div>
+    <div class="summary-card"><span>Overdue</span><strong class="text-negative">$34,000</strong></div>
+    <div class="summary-card"><span>Collected This Month</span><strong class="text-positive">$210,000</strong></div>
+</div>
+
+<table class="apex-table">
+    <thead><tr><th>Customer</th><th>Invoice #</th><th>Issue Date</th><th>Due Date</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>
+        <tr><td>GlobalTech Inc</td><td>SI-1042</td><td>2025-01-12</td><td>2025-02-12</td><td>$48,000</td><td><span class="badge badge-warning">Pending</span></td><td><button class="btn-sm">Send Reminder</button></td></tr>
+        <tr><td>Retail Corp</td><td>SI-1041</td><td>2025-01-08</td><td>2025-01-22</td><td>$12,500</td><td><span class="badge badge-danger">Overdue</span></td><td><button class="btn-sm">Escalate</button></td></tr>
+        <tr><td>Startup Hub</td><td>SI-1040</td><td>2025-01-05</td><td>2025-02-05</td><td>$8,750</td><td><span class="badge badge-success">Paid</span></td><td><button class="btn-sm">View</button></td></tr>
+    </tbody>
+</table>

@@ -1,0 +1,49 @@
+@page "/crm/pipeline"
+@attribute [Authorize]
+<PageTitle>Sales Pipeline - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#128202; Sales Pipeline</h1>
+    <span style="color:var(--apex-text-muted)">Total Pipeline: <strong>$1,840,000</strong></span>
+</div>
+
+<div class="pipeline-board">
+    @foreach (var stage in stages)
+    {
+        <div class="pipeline-col">
+            <div class="pipeline-header">
+                <span>@stage.Name</span>
+                <span class="pipeline-count">@stage.Leads.Count</span>
+            </div>
+            <div class="pipeline-total">@stage.Leads.Sum(l => l.Value).ToString("C0")</div>
+            @foreach (var lead in stage.Leads)
+            {
+                <div class="pipeline-card">
+                    <div class="pipeline-card-name">@lead.Name</div>
+                    <div class="pipeline-card-company">@lead.Company</div>
+                    <div class="pipeline-card-value">@lead.Value.ToString("C0")</div>
+                    <div class="pipeline-card-meta">
+                        <span>&#128197; @lead.CloseDate.ToString("MMM dd")</span>
+                        <span>&#128100; @lead.Owner</span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<PipelineStage> stages = new()
+    {
+        new("New", new(){ new("John Smith","Acme Corp",45000,DateTime.Now.AddDays(30),"Team A"), new("Lisa Wong","DataSync Inc",15000,DateTime.Now.AddDays(14),"Team C") }),
+        new("Qualified", new(){ new("Mark Peters","BuildRight Co",280000,DateTime.Now.AddDays(45),"Team A"), new("Anna Dube","MedCare",90000,DateTime.Now.AddDays(20),"Team B") }),
+        new("Proposal", new(){ new("Sarah Johnson","Innovate Ltd",120000,DateTime.Now.AddDays(10),"Team B"), new("Chris Moyo","RetailMax",65000,DateTime.Now.AddDays(7),"Team A") }),
+        new("Negotiation", new(){ new("Tom Banda","ConstructCo",380000,DateTime.Now.AddDays(5),"Team A") }),
+        new("Closed Won", new(){ new("GlobalTech","GlobalTech Inc",480000,DateTime.Now.AddDays(-2),"Team B"), new("RetailCorp","Retail Corp",240000,DateTime.Now.AddDays(-5),"Team A") }),
+    };
+
+    private class PipelineStage { public string Name{get;set;}=""; public List<PipelineLead> Leads{get;set;}=new();
+        public PipelineStage(string n, List<PipelineLead> l){Name=n;Leads=l;} }
+    private class PipelineLead { public string Name{get;set;}=""; public string Company{get;set;}=""; public decimal Value{get;set;} public DateTime CloseDate{get;set;} public string Owner{get;set;}="";
+        public PipelineLead(string n, string c, decimal v, DateTime d, string o){Name=n;Company=c;Value=v;CloseDate=d;Owner=o;} }
+}

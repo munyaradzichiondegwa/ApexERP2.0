@@ -1,0 +1,71 @@
+@page "/projects/tasks"
+@attribute [Authorize]
+<PageTitle>Tasks - ApexERP</PageTitle>
+<div class="apex-page-header">
+    <h1>&#9989; Task Board</h1>
+    <button class="btn-primary" @onclick="() => showForm = true">+ New Task</button>
+</div>
+<div class="pipeline-board">
+    @foreach (var col in columns)
+    {
+        <div class="pipeline-col">
+            <div class="pipeline-header"><span>@col.Name</span><span class="pipeline-count">@col.Tasks.Count</span></div>
+            @foreach (var t in col.Tasks)
+            {
+                <div class="pipeline-card">
+                    <div class="pipeline-card-name">@t.Title</div>
+                    <div class="pipeline-card-company">@t.Project</div>
+                    <div class="pipeline-card-meta">
+                        <span>&#128100; @t.Assignee</span>
+                        <span class="badge @PriorityBadge(t.Priority)" style="font-size:10px">@t.Priority</span>
+                    </div>
+                    <div style="font-size:11px;color:var(--apex-text-muted);margin-top:4px">Due: @t.Due.ToString("MMM dd")</div>
+                </div>
+            }
+        </div>
+    }
+</div>
+@if (showForm)
+{
+    <div class="apex-modal-backdrop" @onclick="() => showForm = false">
+        <div class="apex-modal" @onclick:stopPropagation>
+            <div class="modal-header">New Task</div>
+            <div class="modal-body">
+                <label>Title</label><input class="apex-input" @bind="newTask.Title" />
+                <label>Project</label>
+                <select class="apex-select" @bind="newTask.Project">
+                    <option>ERP Implementation Phase 2</option><option>Warehouse Automation</option><option>Customer Portal</option><option>Mobile App</option>
+                </select>
+                <label>Assignee</label>
+                <select class="apex-select" @bind="newTask.Assignee">
+                    <option>Alice Moyo</option><option>Brian Chikwanda</option><option>Carol Dube</option><option>David Ncube</option>
+                </select>
+                <label>Priority</label>
+                <select class="apex-select" @bind="newTask.Priority">
+                    <option>Low</option><option>Medium</option><option>High</option><option>Critical</option>
+                </select>
+                <label>Due Date</label><input class="apex-input" type="date" @bind="newTask.Due" />
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" @onclick="Save">Save</button>
+                <button class="btn-secondary" @onclick="() => showForm = false">Cancel</button>
+            </div>
+        </div>
+    </div>
+}
+@code {
+    private bool showForm = false;
+    private TaskModel newTask = new();
+    private string PriorityBadge(string p) => p == "Critical" ? "badge-danger" : p == "High" ? "badge-warning" : p == "Medium" ? "badge-info" : "badge-success";
+    private void Save() { columns[0].Tasks.Add(newTask); newTask = new(); showForm = false; }
+    private List<KanbanColumn> columns = new()
+    {
+        new("Backlog", new(){ new("Design database schema","ERP Phase 2","Brian Chikwanda","High",DateTime.Now.AddDays(10)), new("Write API documentation","Customer Portal","Alice Moyo","Low",DateTime.Now.AddDays(20)) }),
+        new("In Progress", new(){ new("Implement payroll module","ERP Phase 2","Brian Chikwanda","Critical",DateTime.Now.AddDays(3)), new("Set up CI/CD pipeline","Warehouse Automation","David Ncube","High",DateTime.Now.AddDays(5)), new("UI design for mobile app","Mobile App","Carol Dube","Medium",DateTime.Now.AddDays(7)) }),
+        new("In Review", new(){ new("Finance module testing","ERP Phase 2","Alice Moyo","High",DateTime.Now.AddDays(2)), new("Security audit","Customer Portal","Brian Chikwanda","Critical",DateTime.Now.AddDays(1)) }),
+        new("Done", new(){ new("Project kickoff meeting","ERP Phase 2","Alice Moyo","Medium",DateTime.Now.AddDays(-5)), new("Requirements gathering","Warehouse Automation","Carol Dube","High",DateTime.Now.AddDays(-10)) }),
+    };
+    private class KanbanColumn { public string Name{get;set;}=""; public List<TaskModel> Tasks{get;set;}=new(); public KanbanColumn(string n, List<TaskModel> t){Name=n;Tasks=t;} }
+    private class TaskModel { public string Title{get;set;}=""; public string Project{get;set;}="ERP Implementation Phase 2"; public string Assignee{get;set;}="Alice Moyo"; public string Priority{get;set;}="Medium"; public DateTime Due{get;set;}=DateTime.Today.AddDays(7); public TaskModel(){} public TaskModel(string t, string pr, string a, string p, DateTime d){Title=t;Project=pr;Assignee=a;Priority=p;Due=d;} }
+}
+

@@ -1,0 +1,57 @@
+@page "/admin/audit"
+@attribute [Authorize]
+<PageTitle>Audit Log - ApexERP</PageTitle>
+<div class="apex-page-header">
+    <h1>&#128221; Audit Log</h1>
+    <button class="btn-secondary">Export CSV</button>
+</div>
+<div class="filter-bar">
+    <input class="apex-input" placeholder="Search logs..." @bind="search" />
+    <select class="apex-select" @bind="moduleFilter">
+        <option value="">All Modules</option>
+        <option>Finance</option><option>HR</option><option>Inventory</option><option>CRM</option><option>Admin</option>
+    </select>
+    <select class="apex-select" @bind="actionFilter">
+        <option value="">All Actions</option>
+        <option>Create</option><option>Edit</option><option>Delete</option><option>Login</option><option>Approve</option>
+    </select>
+</div>
+<table class="apex-table">
+    <thead><tr><th>Timestamp</th><th>User</th><th>Module</th><th>Action</th><th>Record</th><th>IP Address</th></tr></thead>
+    <tbody>
+        @foreach (var log in Filtered)
+        {
+            <tr>
+                <td style="font-size:12px">@log.Time.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td>@log.User</td>
+                <td>@log.Module</td>
+                <td><span class="badge @ActionBadge(log.Action)">@log.Action</span></td>
+                <td style="font-size:12px">@log.Record</td>
+                <td style="font-size:12px;color:var(--apex-text-muted)">@log.IP</td>
+            </tr>
+        }
+    </tbody>
+</table>
+@code {
+    private string search = "", moduleFilter = "", actionFilter = "";
+    private string ActionBadge(string a) => a == "Delete" ? "badge-danger" : a == "Approve" ? "badge-success" : a == "Login" ? "badge-info" : "badge-warning";
+    private IEnumerable<AuditEntry> Filtered => logs.Where(l =>
+        (string.IsNullOrEmpty(search) || l.Record.Contains(search, StringComparison.OrdinalIgnoreCase) || l.User.Contains(search, StringComparison.OrdinalIgnoreCase)) &&
+        (string.IsNullOrEmpty(moduleFilter) || l.Module == moduleFilter) &&
+        (string.IsNullOrEmpty(actionFilter) || l.Action == actionFilter));
+    private List<AuditEntry> logs = new()
+    {
+        new(DateTime.Now.AddMinutes(-5), "Alice Moyo", "Finance", "Approve", "Invoice INV-1042 approved for ,000", "192.168.1.101"),
+        new(DateTime.Now.AddMinutes(-12), "Brian Chikwanda", "Inventory", "Edit", "Stock adjustment SKU003 +500 units", "192.168.1.102"),
+        new(DateTime.Now.AddMinutes(-28), "Carol Dube", "HR", "Create", "New employee EMP008 - Grace Ndoro", "192.168.1.103"),
+        new(DateTime.Now.AddMinutes(-45), "Alice Moyo", "Admin", "Edit", "User role changed: Frank Banda -> Finance Manager", "192.168.1.101"),
+        new(DateTime.Now.AddHours(-1), "David Ncube", "Finance", "Login", "User logged in successfully", "192.168.1.104"),
+        new(DateTime.Now.AddHours(-2), "Frank Banda", "Finance", "Create", "New purchase order PO-2092 created - ,200", "192.168.1.105"),
+        new(DateTime.Now.AddHours(-3), "Grace Ndoro", "CRM", "Edit", "Lead updated: Sarah Johnson - stage changed to Proposal", "192.168.1.106"),
+        new(DateTime.Now.AddHours(-4), "Alice Moyo", "Admin", "Delete", "User account deactivated: Eva Mutasa", "192.168.1.101"),
+        new(DateTime.Now.AddHours(-5), "Brian Chikwanda", "Inventory", "Create", "New stock item SKU009 registered", "192.168.1.102"),
+        new(DateTime.Now.AddHours(-6), "Carol Dube", "HR", "Approve", "Leave request approved: Brian Chikwanda 5 days", "192.168.1.103"),
+    };
+    private class AuditEntry { public DateTime Time{get;set;} public string User{get;set;}=""; public string Module{get;set;}=""; public string Action{get;set;}=""; public string Record{get;set;}=""; public string IP{get;set;}="";
+        public AuditEntry(DateTime t, string u, string m, string a, string r, string ip){Time=t;User=u;Module=m;Action=a;Record=r;IP=ip;} }
+}

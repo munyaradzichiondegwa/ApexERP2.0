@@ -1,0 +1,6 @@
+@ApexERP.HR_HostAddress = http://localhost:5270
+
+GET {{ApexERP.HR_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

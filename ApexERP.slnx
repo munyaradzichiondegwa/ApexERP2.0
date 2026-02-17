@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ApexERP.BackgroundJobs/ApexERP.BackgroundJobs.csproj" />
+    <Project Path="src/ApexERP.CRM/ApexERP.CRM.csproj" />
+    <Project Path="src/ApexERP.Finance/ApexERP.Finance.csproj" />
+    <Project Path="src/ApexERP.HR/ApexERP.HR.csproj" />
+    <Project Path="src/ApexERP.Infrastructure/ApexERP.Infrastructure.csproj" />
+    <Project Path="src/ApexERP.Inventory/ApexERP.Inventory.csproj" />
+    <Project Path="src/ApexERP.Shared/ApexERP.Shared.csproj" />
+    <Project Path="src/ApexERP.SupplyChain/ApexERP.SupplyChain.csproj" />
+    <Project Path="src/ApexERP.Web/ApexERP.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ApexERP.Finance.Tests/ApexERP.Finance.Tests.csproj" />
+    <Project Path="tests/ApexERP.Integration.Tests/ApexERP.Integration.Tests.csproj" />
+    <Project Path="tests/ApexERP.Web.Tests/ApexERP.Web.Tests.csproj" />
+  </Folder>
+</Solution>

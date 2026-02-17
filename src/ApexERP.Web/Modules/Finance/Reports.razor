@@ -1,0 +1,38 @@
+@page "/finance/reports"
+@attribute [Authorize]
+<PageTitle>Financial Reports - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#128196; Financial Reports</h1>
+</div>
+
+<div class="report-grid">
+    <div class="report-card" @onclick="@(() => selectedReport = "Income Statement")">
+        <span class="report-icon">&#128200;</span>
+        <span>Income Statement</span>
+    </div>
+    <div class="report-card" @onclick="@(() => selectedReport = "Balance Sheet")">
+        <span class="report-icon">&#9878;</span>
+        <span>Balance Sheet</span>
+    </div>
+    <div class="report-card" @onclick="@(() => selectedReport = "Cash Flow")">
+        <span class="report-icon">&#128181;</span>
+        <span>Cash Flow</span>
+    </div>
+    <div class="report-card" @onclick="@(() => selectedReport = "Trial Balance")">
+        <span class="report-icon">&#128203;</span>
+        <span>Trial Balance</span>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(selectedReport))
+{
+    <div class="apex-panel">
+        <div class="panel-header">@selectedReport <button class="btn-sm float-right">Export PDF</button></div>
+        <p class="text-muted">@selectedReport data will render here with full chart and table integration.</p>
+    </div>
+}
+
+@code {
+    private string selectedReport = "";
+}

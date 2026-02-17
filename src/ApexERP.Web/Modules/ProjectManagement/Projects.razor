@@ -1,0 +1,78 @@
+@page "/projects"
+@attribute [Authorize]
+<PageTitle>Projects - ApexERP</PageTitle>
+<div class="apex-page-header">
+    <h1>&#128203; Project Management</h1>
+    <button class="btn-primary" @onclick="() => showForm = true">+ New Project</button>
+</div>
+<div class="summary-row">
+    <div class="summary-card"><span>Active Projects</span><strong>12</strong></div>
+    <div class="summary-card"><span>On Track</span><strong class="text-positive">8</strong></div>
+    <div class="summary-card"><span>At Risk</span><strong class="text-negative">3</strong></div>
+    <div class="summary-card"><span>Total Budget</span><strong>.4M</strong></div>
+</div>
+<table class="apex-table">
+    <thead><tr><th>Project</th><th>Manager</th><th>Start</th><th>Deadline</th><th>Budget</th><th>Spent</th><th>Progress</th><th>Status</th></tr></thead>
+    <tbody>
+        @foreach (var p in projects)
+        {
+            <tr>
+                <td><strong>@p.Name</strong><br/><small style="color:var(--apex-text-muted)">@p.Client</small></td>
+                <td>@p.Manager</td>
+                <td>@p.Start.ToString("MMM dd")</td>
+                <td>@p.Deadline.ToString("MMM dd, yyyy")</td>
+                <td>@p.Budget.ToString("C0")</td>
+                <td>@p.Spent.ToString("C0")</td>
+                <td>
+                    <div style="display:flex;align-items:center;gap:8px">
+                        <div style="flex:1;background:#f1f5f9;border-radius:4px;height:8px">
+                            <div style="width:@p.Progress%;background:@ProgressColor(p.Progress);height:8px;border-radius:4px"></div>
+                        </div>
+                        <span style="font-size:12px;font-weight:600">@p.Progress%</span>
+                    </div>
+                </td>
+                <td><span class="badge @StatusBadge(p.Status)">@p.Status</span></td>
+            </tr>
+        }
+    </tbody>
+</table>
+@if (showForm)
+{
+    <div class="apex-modal-backdrop" @onclick="() => showForm = false">
+        <div class="apex-modal" @onclick:stopPropagation>
+            <div class="modal-header">New Project</div>
+            <div class="modal-body">
+                <label>Project Name</label><input class="apex-input" @bind="newProj.Name" />
+                <label>Client</label><input class="apex-input" @bind="newProj.Client" />
+                <label>Project Manager</label>
+                <select class="apex-select" @bind="newProj.Manager">
+                    <option>Alice Moyo</option><option>Brian Chikwanda</option><option>Carol Dube</option><option>David Ncube</option>
+                </select>
+                <label>Start Date</label><input class="apex-input" type="date" @bind="newProj.Start" />
+                <label>Deadline</label><input class="apex-input" type="date" @bind="newProj.Deadline" />
+                <label>Budget</label><input class="apex-input" type="number" @bind="newProj.Budget" />
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" @onclick="Save">Save</button>
+                <button class="btn-secondary" @onclick="() => showForm = false">Cancel</button>
+            </div>
+        </div>
+    </div>
+}
+@code {
+    private bool showForm = false;
+    private ProjectModel newProj = new();
+    private string StatusBadge(string s) => s == "On Track" ? "badge-success" : s == "At Risk" ? "badge-warning" : s == "Delayed" ? "badge-danger" : "badge-info";
+    private string ProgressColor(int p) => p >= 75 ? "#16a34a" : p >= 50 ? "#1a56db" : p >= 25 ? "#d97706" : "#dc2626";
+    private void Save() { newProj.Status = "On Track"; newProj.Progress = 0; projects.Add(newProj); newProj = new(); showForm = false; }
+    private List<ProjectModel> projects = new()
+    {
+        new() { Name="ERP Implementation Phase 2", Client="Internal", Manager="Alice Moyo", Start=new DateTime(2025,1,1), Deadline=new DateTime(2025,6,30), Budget=480000, Spent=210000, Progress=44, Status="On Track" },
+        new() { Name="Warehouse Automation System", Client="Internal", Manager="David Ncube", Start=new DateTime(2025,1,15), Deadline=new DateTime(2025,4,30), Budget=320000, Spent=180000, Progress=56, Status="At Risk" },
+        new() { Name="Customer Portal Development", Client="GlobalTech Inc", Manager="Brian Chikwanda", Start=new DateTime(2024,11,1), Deadline=new DateTime(2025,3,31), Budget=180000, Spent=140000, Progress=78, Status="On Track" },
+        new() { Name="Supply Chain Optimisation", Client="Internal", Manager="Carol Dube", Start=new DateTime(2025,2,1), Deadline=new DateTime(2025,8,31), Budget=240000, Spent=40000, Progress=17, Status="On Track" },
+        new() { Name="Mobile App Development", Client="Retail Corp", Manager="Brian Chikwanda", Start=new DateTime(2024,10,1), Deadline=new DateTime(2025,2,28), Budget=150000, Spent=160000, Progress=85, Status="At Risk" },
+        new() { Name="HR System Upgrade", Client="Internal", Manager="Carol Dube", Start=new DateTime(2024,9,1), Deadline=new DateTime(2024,12,31), Budget=90000, Spent=95000, Progress=100, Status="Completed" },
+    };
+    private class ProjectModel { public string Name{get;set;}=""; public string Client{get;set;}=""; public string Manager{get;set;}=""; public DateTime Start{get;set;}=DateTime.Today; public DateTime Deadline{get;set;}=DateTime.Today.AddMonths(3); public decimal Budget{get;set;} public decimal Spent{get;set;} public int Progress{get;set;} public string Status{get;set;}="On Track"; }
+}

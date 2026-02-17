@@ -1,0 +1,18 @@
+@page "/hr/performance"
+@attribute [Authorize]
+<PageTitle>Performance - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#11088; Performance Reviews</h1>
+    <button class="btn-primary">+ New Review</button>
+</div>
+
+<table class="apex-table">
+    <thead><tr><th>Employee</th><th>Period</th><th>Rating</th><th>Reviewer</th><th>Status</th></tr></thead>
+    <tbody>
+        <tr><td>Alice Moyo</td><td>Q4 2024</td><td>&#11088;&#11088;&#11088;&#11088;&#11088; 5.0</td><td>CEO</td><td><span class="badge badge-success">Completed</span></td></tr>
+        <tr><td>Brian Chikwanda</td><td>Q4 2024</td><td>&#11088;&#11088;&#11088;&#11088; 4.2</td><td>CTO</td><td><span class="badge badge-success">Completed</span></td></tr>
+        <tr><td>Carol Dube</td><td>Q4 2024</td><td>&#11088;&#11088;&#11088;&#11088; 4.5</td><td>CEO</td><td><span class="badge badge-warning">In Progress</span></td></tr>
+        <tr><td>David Ncube</td><td>Q4 2024</td><td>-</td><td>COO</td><td><span class="badge badge-info">Scheduled</span></td></tr>
+    </tbody>
+</table>

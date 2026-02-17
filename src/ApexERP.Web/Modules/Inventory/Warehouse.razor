@@ -1,0 +1,17 @@
+@page "/inventory/warehouse"
+@attribute [Authorize]
+<PageTitle>Warehouse - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#127970; Warehouse Operations</h1>
+    <button class="btn-primary">+ New Transfer</button>
+</div>
+
+<table class="apex-table">
+    <thead><tr><th>Transfer ID</th><th>From</th><th>To</th><th>Item</th><th>Qty</th><th>Date</th><th>Status</th></tr></thead>
+    <tbody>
+        <tr><td>TR-001</td><td>Warehouse A</td><td>Warehouse B</td><td>Laptop Dell XPS</td><td>10</td><td>2025-01-14</td><td><span class="badge badge-success">Completed</span></td></tr>
+        <tr><td>TR-002</td><td>Warehouse B</td><td>Store Front</td><td>Office Chair</td><td>5</td><td>2025-01-15</td><td><span class="badge badge-warning">In Transit</span></td></tr>
+        <tr><td>TR-003</td><td>Supplier</td><td>Warehouse A</td><td>Steel Rods 10mm</td><td>1000</td><td>2025-01-16</td><td><span class="badge badge-info">Scheduled</span></td></tr>
+    </tbody>
+</table>

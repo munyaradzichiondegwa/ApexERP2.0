@@ -1,0 +1,65 @@
+@page "/supply/po-approval"
+@attribute [Authorize]
+<PageTitle>PO Approvals - ApexERP</PageTitle>
+<div class="apex-page-header"><h1>Purchase Order Approvals</h1></div>
+@foreach (var po in orders)
+{
+    <div class="approval-card">
+        <div class="approval-header">
+            <div><span class="approval-type">Purchase Order</span><span class="approval-ref">@po.Number</span></div>
+            <span class="approval-amount">@po.Total.ToString("C")</span>
+        </div>
+        <div class="approval-body">
+            <div class="approval-meta">
+                <span>@po.Vendor</span><span>@po.Date.ToString("MMM dd, yyyy")</span><span>@po.RequestedBy</span>
+            </div>
+            <table class="apex-table" style="margin-top:10px">
+                <thead><tr><th>Item</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead>
+                <tbody>
+                    @foreach (var item in po.Items)
+                    {
+                        <tr><td>@item.Name</td><td>@item.Qty</td><td>@item.Price.ToString("C")</td><td>@((item.Qty * item.Price).ToString("C"))</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="approval-footer">
+            <div class="approval-workflow">
+                @foreach (var step in po.Steps)
+                {
+                    <div class="workflow-step @step.Status">
+                        <div class="step-dot"></div>
+                        <div class="step-info"><span class="step-role">@step.Role</span><span class="step-name">@step.Name</span></div>
+                    </div>
+                }
+            </div>
+            @if (po.Status == "Pending")
+            {
+                <div class="approval-actions">
+                    <button class="btn-secondary" @onclick="() => RejectPO(po)">Reject</button>
+                    <button class="btn-primary" @onclick="() => ApprovePO(po)">Approve</button>
+                </div>
+            }
+            else
+            {
+                <span class="badge @(po.Status == "Approved" ? "badge-success" : "badge-danger")">@po.Status</span>
+            }
+        </div>
+    </div>
+}
+@code {
+    private void ApprovePO(POModel po) { po.Status = "Approved"; var s = po.Steps.FirstOrDefault(x => x.Status == "current"); if (s != null) s.Status = "complete"; }
+    private void RejectPO(POModel po) { po.Status = "Rejected"; }
+    private List<POModel> orders = new()
+    {
+        new() { Number="PO-2091", Vendor="Tech Vendors Ltd", Date=DateTime.Now.AddDays(-1), RequestedBy="David Ncube", Status="Pending", Total=33000,
+            Items=new(){ new("24-Port Network Switch",4,1800), new("Dell PowerEdge Server",2,8000), new("Cat6 Cabling",3,1400) },
+            Steps=new(){ new("Dept Head","Carol Dube","complete"), new("Finance","Alice Moyo","current"), new("CEO","John Apex","pending") } },
+        new() { Number="PO-2092", Vendor="ABC Supplies", Date=DateTime.Now, RequestedBy="Carol Dube", Status="Pending", Total=4200,
+            Items=new(){ new("Office Paper A4",20,45), new("Printer Toner",5,180), new("Desk Organizers",30,40) },
+            Steps=new(){ new("Dept Head","Carol Dube","complete"), new("Finance","Alice Moyo","current") } },
+    };
+    private class POModel { public string Number{get;set;}=""; public string Vendor{get;set;}=""; public DateTime Date{get;set;} public string RequestedBy{get;set;}=""; public string Status{get;set;}=""; public decimal Total{get;set;} public List<POItem> Items{get;set;}=new(); public List<WorkflowStep> Steps{get;set;}=new(); }
+    private class POItem { public string Name{get;set;}=""; public int Qty{get;set;} public decimal Price{get;set;} public POItem(string n, int q, decimal p){Name=n;Qty=q;Price=p;} }
+    private class WorkflowStep { public string Role{get;set;}=""; public string Name{get;set;}=""; public string Status{get;set;}="pending"; public WorkflowStep(string r, string n, string s){Role=r;Name=n;Status=s;} }
+}

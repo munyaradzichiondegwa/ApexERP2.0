@@ -1,0 +1,6 @@
+@ApexERP.Inventory_HostAddress = http://localhost:5022
+
+GET {{ApexERP.Inventory_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

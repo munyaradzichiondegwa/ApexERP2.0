@@ -1,0 +1,6 @@
+@ApexERP.CRM_HostAddress = http://localhost:5293
+
+GET {{ApexERP.CRM_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

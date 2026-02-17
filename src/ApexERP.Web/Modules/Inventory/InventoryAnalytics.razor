@@ -1,0 +1,51 @@
+@page "/inventory/analytics"
+@attribute [Authorize]
+<PageTitle>Inventory Analytics - ApexERP</PageTitle>
+
+<div class="apex-page-header"><h1>&#128200; Inventory Analytics</h1></div>
+
+<div class="kpi-grid">
+    <div class="kpi-card kpi-finance"><div class="kpi-icon">&#128230;</div><div class="kpi-body"><span class="kpi-label">Total SKUs</span><span class="kpi-value">1,284</span><span class="kpi-delta positive">&#9650; 24 new</span></div></div>
+    <div class="kpi-card kpi-hr"><div class="kpi-icon">&#128181;</div><div class="kpi-body"><span class="kpi-label">Stock Value</span><span class="kpi-value">$2.4M</span><span class="kpi-delta positive">&#9650; 4.2%</span></div></div>
+    <div class="kpi-card kpi-inventory"><div class="kpi-icon">&#9888;</div><div class="kpi-body"><span class="kpi-label">Low Stock Items</span><span class="kpi-value">47</span><span class="kpi-delta negative">&#9650; 12 critical</span></div></div>
+    <div class="kpi-card kpi-crm"><div class="kpi-icon">&#128665;</div><div class="kpi-body"><span class="kpi-label">Turnover Rate</span><span class="kpi-value">4.2x</span><span class="kpi-delta positive">&#9650; Industry avg 3.1x</span></div></div>
+</div>
+
+<div class="dashboard-grid">
+    <div class="dash-panel">
+        <div class="panel-header">Stock by Category</div>
+        <div class="donut-chart-area" style="padding:16px">
+            @foreach (var cat in categories)
+            {
+                <div class="expense-row">
+                    <span class="expense-label">@cat.Name</span>
+                    <div class="expense-bar-track"><div class="expense-bar" style="width:@cat.Pct%;background:@cat.Color"></div></div>
+                    <span class="expense-pct">@cat.Pct%</span>
+                    <span class="expense-amt">@cat.Count items</span>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="dash-panel">
+        <div class="panel-header">Low Stock Alerts</div>
+        <table class="apex-table">
+            <thead><tr><th>SKU</th><th>Item</th><th>Stock</th><th>Reorder</th></tr></thead>
+            <tbody>
+                <tr><td>SKU002</td><td>Office Chair</td><td class="text-negative">8</td><td>10</td></tr>
+                <tr><td>SKU004</td><td>Printer Paper A4</td><td class="text-negative">120</td><td>200</td></tr>
+                <tr><td>SKU008</td><td>Safety Helmets</td><td class="text-negative">5</td><td>20</td></tr>
+                <tr><td>SKU012</td><td>Generator Fuel (L)</td><td class="text-negative">80</td><td>200</td></tr>
+                <tr><td>SKU019</td><td>First Aid Kits</td><td class="text-negative">2</td><td>10</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private List<(string Name, int Pct, string Color, int Count)> categories = new()
+    {
+        ("Electronics", 35, "#1a56db", 449), ("Raw Materials", 28, "#0891b2", 359),
+        ("Office Supplies", 18, "#16a34a", 231), ("Consumables", 12, "#d97706", 154),
+        ("Equipment", 7, "#7c3aed", 91),
+    };
+}

@@ -1,0 +1,19 @@
+@page "/finance/budget"
+@attribute [Authorize]
+<PageTitle>Budgeting - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#128202; Budgeting &amp; Forecasting</h1>
+    <button class="btn-primary">+ New Budget</button>
+</div>
+
+<table class="apex-table">
+    <thead><tr><th>Department</th><th>Budget</th><th>Actual</th><th>Variance</th><th>% Used</th></tr></thead>
+    <tbody>
+        <tr><td>Finance</td><td>$120,000</td><td>$98,400</td><td class="text-positive">$21,600</td><td>82%</td></tr>
+        <tr><td>Human Resources</td><td>$80,000</td><td>$76,200</td><td class="text-positive">$3,800</td><td>95%</td></tr>
+        <tr><td>Operations</td><td>$250,000</td><td>$268,000</td><td class="text-negative">-$18,000</td><td>107%</td></tr>
+        <tr><td>Marketing</td><td>$60,000</td><td>$41,000</td><td class="text-positive">$19,000</td><td>68%</td></tr>
+        <tr><td>IT</td><td>$150,000</td><td>$144,000</td><td class="text-positive">$6,000</td><td>96%</td></tr>
+    </tbody>
+</table>

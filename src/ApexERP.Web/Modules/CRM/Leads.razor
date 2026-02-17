@@ -1,0 +1,25 @@
+@page "/crm/leads"
+@attribute [Authorize]
+<PageTitle>Leads - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#127919; Leads &amp; Opportunities</h1>
+    <button class="btn-primary">+ Add Lead</button>
+</div>
+
+<div class="summary-row">
+    <div class="summary-card"><span>Total Leads</span><strong>184</strong></div>
+    <div class="summary-card"><span>Qualified</span><strong>62</strong></div>
+    <div class="summary-card"><span>Pipeline Value</span><strong>$1.2M</strong></div>
+    <div class="summary-card"><span>Closed This Month</span><strong class="text-positive">14</strong></div>
+</div>
+
+<table class="apex-table">
+    <thead><tr><th>Lead</th><th>Company</th><th>Source</th><th>Value</th><th>Stage</th><th>Owner</th></tr></thead>
+    <tbody>
+        <tr><td>John Smith</td><td>Acme Corp</td><td>Website</td><td>$45,000</td><td><span class="badge badge-info">Qualified</span></td><td>Sales Team A</td></tr>
+        <tr><td>Sarah Johnson</td><td>Innovate Ltd</td><td>Referral</td><td>$120,000</td><td><span class="badge badge-warning">Proposal</span></td><td>Sales Team B</td></tr>
+        <tr><td>Mike Peters</td><td>BuildRight Co</td><td>Trade Show</td><td>$280,000</td><td><span class="badge badge-success">Negotiation</span></td><td>Sales Team A</td></tr>
+        <tr><td>Lisa Wong</td><td>DataSync Inc</td><td>Cold Call</td><td>$15,000</td><td><span class="badge badge-danger">New</span></td><td>Sales Team C</td></tr>
+    </tbody>
+</table>

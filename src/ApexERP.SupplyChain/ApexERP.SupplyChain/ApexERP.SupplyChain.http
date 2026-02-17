@@ -1,0 +1,6 @@
+@ApexERP.SupplyChain_HostAddress = http://localhost:5095
+
+GET {{ApexERP.SupplyChain_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

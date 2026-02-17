@@ -1,0 +1,89 @@
+@page "/admin/settings"
+@attribute [Authorize]
+<PageTitle>Settings - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#9881; System Settings</h1>
+    <button class="btn-primary" @onclick="Save">Save Changes</button>
+</div>
+
+<div class="settings-grid">
+    <div class="settings-panel">
+        <div class="panel-header">Organisation</div>
+        <label>Company Name</label>
+        <input class="apex-input" @bind="orgName" />
+        <label>Fiscal Year Start</label>
+        <input class="apex-input" type="text" placeholder="e.g. 2025-01-01" @bind="fiscalYear" />
+        <label>Base Currency</label>
+        <select class="apex-select" @bind="currency">
+            <option>USD</option><option>EUR</option><option>GBP</option><option>ZAR</option><option>ZWL</option>
+        </select>
+        <label>Time Zone</label>
+        <select class="apex-select" @bind="timezone">
+            <option>UTC</option><option>Africa/Harare</option><option>Africa/Johannesburg</option><option>Europe/London</option><option>America/New_York</option>
+        </select>
+    </div>
+
+    <div class="settings-panel">
+        <div class="panel-header">Modules</div>
+        @foreach (var mod in modules)
+        {
+            <div class="toggle-row">
+                <span>@mod.Name</span>
+                <label class="toggle">
+                    <input type="checkbox" @bind="mod.Enabled" />
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        }
+    </div>
+
+    <div class="settings-panel">
+        <div class="panel-header">Security</div>
+        <label>Session Timeout (minutes)</label>
+        <input class="apex-input" type="number" @bind="sessionTimeout" />
+        <label>Require MFA</label>
+        <select class="apex-select" @bind="mfaRequired">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </select>
+        <label>Audit Log Retention (days)</label>
+        <input class="apex-input" type="number" @bind="auditRetention" />
+    </div>
+</div>
+
+@if (saved)
+{
+    <div class="alert-success">&#10003; Settings saved successfully.</div>
+}
+
+@code {
+    private string orgName = "ApexERP Organisation";
+    private string fiscalYear = "2025-01-01";
+    private string currency = "USD";
+    private string timezone = "UTC";
+    private int sessionTimeout = 30;
+    private string mfaRequired = "true";
+    private int auditRetention = 90;
+    private bool saved = false;
+
+    private List<ModuleToggle> modules = new()
+    {
+        new() { Name = "Finance", Enabled = true },
+        new() { Name = "Human Resources", Enabled = true },
+        new() { Name = "Supply Chain", Enabled = true },
+        new() { Name = "Inventory", Enabled = true },
+        new() { Name = "CRM", Enabled = true },
+        new() { Name = "Project Management", Enabled = false },
+        new() { Name = "Asset Management", Enabled = false },
+    };
+
+    private void Save()
+    {
+        saved = true;
+        StateHasChanged();
+        Task.Delay(3000).ContinueWith(_ => { saved = false; InvokeAsync(StateHasChanged); });
+    }
+
+    private class ModuleToggle { public string Name { get; set; } = ""; public bool Enabled { get; set; } }
+}

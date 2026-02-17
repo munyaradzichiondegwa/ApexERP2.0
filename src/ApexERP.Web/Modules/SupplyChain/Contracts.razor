@@ -1,0 +1,17 @@
+@page "/supply/contracts"
+@attribute [Authorize]
+<PageTitle>Contracts - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#128196; Contracts</h1>
+    <button class="btn-primary">+ New Contract</button>
+</div>
+
+<table class="apex-table">
+    <thead><tr><th>Contract #</th><th>Vendor/Client</th><th>Type</th><th>Start</th><th>End</th><th>Value</th><th>Status</th></tr></thead>
+    <tbody>
+        <tr><td>CT-001</td><td>Tech Vendors Ltd</td><td>Procurement</td><td>2024-01-01</td><td>2025-12-31</td><td>$240,000</td><td><span class="badge badge-success">Active</span></td></tr>
+        <tr><td>CT-002</td><td>GlobalTech Inc</td><td>Service</td><td>2024-06-01</td><td>2025-05-31</td><td>$120,000</td><td><span class="badge badge-success">Active</span></td></tr>
+        <tr><td>CT-003</td><td>Retail Corp</td><td>Supply</td><td>2023-01-01</td><td>2024-12-31</td><td>$80,000</td><td><span class="badge badge-warning">Expiring Soon</span></td></tr>
+    </tbody>
+</table>

@@ -1,0 +1,95 @@
+@page "/finance/analytics"
+@attribute [Authorize]
+<PageTitle>Finance Analytics - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#128200; Finance Analytics</h1>
+    <select class="apex-select" style="width:auto" @bind="period">
+        <option>This Month</option><option>Last Quarter</option><option>YTD</option><option>Last Year</option>
+    </select>
+</div>
+
+<div class="kpi-grid">
+    <div class="kpi-card kpi-finance"><div class="kpi-icon">&#128200;</div><div class="kpi-body"><span class="kpi-label">Revenue</span><span class="kpi-value">$4,820,300</span><span class="kpi-delta positive">&#9650; 12.4%</span></div></div>
+    <div class="kpi-card kpi-hr"><div class="kpi-icon">&#128179;</div><div class="kpi-body"><span class="kpi-label">Expenses</span><span class="kpi-value">$3,204,100</span><span class="kpi-delta negative">&#9650; 8.1%</span></div></div>
+    <div class="kpi-card kpi-inventory"><div class="kpi-icon">&#128181;</div><div class="kpi-body"><span class="kpi-label">Net Profit</span><span class="kpi-value">$1,616,200</span><span class="kpi-delta positive">&#9650; 22.3%</span></div></div>
+    <div class="kpi-card kpi-crm"><div class="kpi-icon">&#128182;</div><div class="kpi-body"><span class="kpi-label">Cash Flow</span><span class="kpi-value">$980,400</span><span class="kpi-delta positive">&#9650; 5.2%</span></div></div>
+</div>
+
+<div class="dashboard-grid">
+    <div class="dash-panel">
+        <div class="panel-header">Monthly Revenue vs Expenses</div>
+        <div class="chart-area">
+            @foreach (var m in months)
+            {
+                <div class="bar-group">
+                    <div class="bar-label">@m.Name</div>
+                    <div class="bar-track">
+                        <div class="bar bar-revenue" style="width:@(m.Revenue/6000)%">@m.Revenue.ToString("C0")</div>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar bar-expense" style="width:@(m.Expense/6000)%">@m.Expense.ToString("C0")</div>
+                    </div>
+                </div>
+            }
+            <div class="chart-legend">
+                <span class="legend-dot" style="background:#1a56db"></span> Revenue
+                <span class="legend-dot" style="background:#dc2626"></span> Expenses
+            </div>
+        </div>
+    </div>
+
+    <div class="dash-panel">
+        <div class="panel-header">Expense Breakdown</div>
+        <div class="donut-chart-area">
+            @foreach (var cat in expenseCategories)
+            {
+                <div class="expense-row">
+                    <span class="expense-label">@cat.Name</span>
+                    <div class="expense-bar-track">
+                        <div class="expense-bar" style="width:@cat.Pct%;background:@cat.Color"></div>
+                    </div>
+                    <span class="expense-pct">@cat.Pct%</span>
+                    <span class="expense-amt">@cat.Amount.ToString("C0")</span>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="dash-panel" style="margin-top:16px">
+    <div class="panel-header">Top Customers by Revenue</div>
+    <table class="apex-table">
+        <thead><tr><th>Customer</th><th>Industry</th><th>Revenue YTD</th><th>Invoices</th><th>Avg Payment Days</th><th>Status</th></tr></thead>
+        <tbody>
+            <tr><td>GlobalTech Inc</td><td>Technology</td><td>$840,000</td><td>24</td><td>28</td><td><span class="badge badge-success">Excellent</span></td></tr>
+            <tr><td>Retail Corp</td><td>Retail</td><td>$620,000</td><td>18</td><td>35</td><td><span class="badge badge-success">Good</span></td></tr>
+            <tr><td>BuildRight Co</td><td>Construction</td><td>$480,000</td><td>12</td><td>42</td><td><span class="badge badge-warning">Average</span></td></tr>
+            <tr><td>Startup Hub</td><td>Tech Startup</td><td>$240,000</td><td>8</td><td>55</td><td><span class="badge badge-danger">Slow Payer</span></td></tr>
+            <tr><td>MedCare Group</td><td>Healthcare</td><td>$180,000</td><td>6</td><td>22</td><td><span class="badge badge-success">Excellent</span></td></tr>
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private string period = "This Month";
+
+    private List<MonthData> months = new()
+    {
+        new("Jul", 380000, 280000), new("Aug", 420000, 310000), new("Sep", 390000, 295000),
+        new("Oct", 450000, 320000), new("Nov", 480000, 340000), new("Dec", 520000, 360000),
+    };
+
+    private List<ExpCat> expenseCategories = new()
+    {
+        new("Salaries & Wages", 45, "#1a56db", 1441845),
+        new("Operations", 22, "#0891b2", 704902),
+        new("Marketing", 12, "#16a34a", 384492),
+        new("IT & Software", 10, "#d97706", 320410),
+        new("Facilities", 7, "#7c3aed", 224287),
+        new("Other", 4, "#64748b", 128164),
+    };
+
+    private record MonthData(string Name, decimal Revenue, decimal Expense);
+    private record ExpCat(string Name, int Pct, string Color, decimal Amount);
+}

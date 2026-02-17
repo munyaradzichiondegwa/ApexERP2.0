@@ -1,0 +1,106 @@
+@page "/finance/ledger"
+@attribute [Authorize]
+<PageTitle>General Ledger - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#128218; General Ledger</h1>
+    <button class="btn-primary" @onclick="() => showForm = true">+ New Entry</button>
+</div>
+
+<div class="filter-bar">
+    <input class="apex-input" placeholder="Search entries..." @bind="searchTerm" />
+    <select class="apex-select" @bind="filterType">
+        <option value="">All Types</option>
+        <option value="Debit">Debit</option>
+        <option value="Credit">Credit</option>
+    </select>
+</div>
+
+<table class="apex-table">
+    <thead>
+        <tr>
+            <th>Date</th><th>Reference</th><th>Description</th>
+            <th>Account</th><th>Debit</th><th>Credit</th><th>Balance</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entry in FilteredEntries)
+        {
+            <tr>
+                <td>@entry.Date.ToString("yyyy-MM-dd")</td>
+                <td>@entry.Reference</td>
+                <td>@entry.Description</td>
+                <td>@entry.Account</td>
+                <td>@(entry.Debit > 0 ? entry.Debit.ToString("C") : "")</td>
+                <td>@(entry.Credit > 0 ? entry.Credit.ToString("C") : "")</td>
+                <td class="@(entry.Balance >= 0 ? "text-positive" : "text-negative")">
+                    @entry.Balance.ToString("C")
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (showForm)
+{
+    <div class="apex-modal-backdrop" @onclick="() => showForm = false">
+        <div class="apex-modal" @onclick:stopPropagation>
+            <div class="modal-header">New Journal Entry</div>
+            <div class="modal-body">
+                <label>Description</label>
+                <input class="apex-input" @bind="newEntry.Description" />
+                <label>Account</label>
+                <input class="apex-input" @bind="newEntry.Account" />
+                <label>Debit</label>
+                <input class="apex-input" type="number" @bind="newEntry.Debit" />
+                <label>Credit</label>
+                <input class="apex-input" type="number" @bind="newEntry.Credit" />
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" @onclick="SaveEntry">Save</button>
+                <button class="btn-secondary" @onclick="() => showForm = false">Cancel</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private string searchTerm = "";
+    private string filterType = "";
+    private bool showForm = false;
+
+    private LedgerEntry newEntry = new();
+
+    private List<LedgerEntry> entries = new()
+    {
+        new() { Date = DateTime.Now.AddDays(-5), Reference = "JE-001", Description = "Office Supplies", Account = "6100 - Expenses", Debit = 1200, Credit = 0, Balance = -1200 },
+        new() { Date = DateTime.Now.AddDays(-4), Reference = "JE-002", Description = "Customer Payment", Account = "1200 - Receivables", Debit = 0, Credit = 8500, Balance = 7300 },
+        new() { Date = DateTime.Now.AddDays(-3), Reference = "JE-003", Description = "Payroll", Account = "6200 - Salaries", Debit = 42000, Credit = 0, Balance = -34700 },
+        new() { Date = DateTime.Now.AddDays(-2), Reference = "JE-004", Description = "Sales Revenue", Account = "4100 - Revenue", Debit = 0, Credit = 60000, Balance = 25300 },
+    };
+
+    private IEnumerable<LedgerEntry> FilteredEntries => entries.Where(e =>
+        (string.IsNullOrEmpty(searchTerm) || e.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) &&
+        (string.IsNullOrEmpty(filterType) || (filterType == "Debit" ? e.Debit > 0 : e.Credit > 0)));
+
+    private void SaveEntry()
+    {
+        newEntry.Date = DateTime.Now;
+        newEntry.Reference = $"JE-{entries.Count + 1:D3}";
+        newEntry.Balance = newEntry.Credit - newEntry.Debit;
+        entries.Insert(0, newEntry);
+        newEntry = new();
+        showForm = false;
+    }
+
+    private class LedgerEntry
+    {
+        public DateTime Date { get; set; }
+        public string Reference { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string Account { get; set; } = "";
+        public decimal Debit { get; set; }
+        public decimal Credit { get; set; }
+        public decimal Balance { get; set; }
+    }
+}

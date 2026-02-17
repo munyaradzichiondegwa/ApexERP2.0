@@ -1,0 +1,25 @@
+@page "/hr/payroll"
+@attribute [Authorize]
+<PageTitle>Payroll - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#128181; Payroll Processing</h1>
+    <button class="btn-primary">Run Payroll</button>
+</div>
+
+<div class="summary-row">
+    <div class="summary-card"><span>Total Payroll</span><strong>$184,200</strong></div>
+    <div class="summary-card"><span>Net Pay</span><strong>$148,000</strong></div>
+    <div class="summary-card"><span>Deductions</span><strong>$36,200</strong></div>
+    <div class="summary-card"><span>Employees Paid</span><strong>342</strong></div>
+</div>
+
+<table class="apex-table">
+    <thead><tr><th>Employee</th><th>Gross Pay</th><th>Tax</th><th>Pension</th><th>Net Pay</th><th>Status</th></tr></thead>
+    <tbody>
+        <tr><td>Alice Moyo</td><td>$8,500</td><td>$1,700</td><td>$850</td><td>$5,950</td><td><span class="badge badge-success">Paid</span></td></tr>
+        <tr><td>Brian Chikwanda</td><td>$5,200</td><td>$1,040</td><td>$520</td><td>$3,640</td><td><span class="badge badge-success">Paid</span></td></tr>
+        <tr><td>Carol Dube</td><td>$6,000</td><td>$1,200</td><td>$600</td><td>$4,200</td><td><span class="badge badge-warning">Processing</span></td></tr>
+        <tr><td>David Ncube</td><td>$4,800</td><td>$960</td><td>$480</td><td>$3,360</td><td><span class="badge badge-warning">Processing</span></td></tr>
+    </tbody>
+</table>

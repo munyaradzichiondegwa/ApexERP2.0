@@ -1,0 +1,132 @@
+@page "/finance/invoice/new"
+@page "/finance/invoice/{Id}"
+@attribute [Authorize]
+<PageTitle>Invoice - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>@(IsNew ? "New Invoice" : $"Invoice {Id}")</h1>
+    <div style="display:flex;gap:8px">
+        <button class="btn-secondary" @onclick="Cancel">Cancel</button>
+        <button class="btn-primary" @onclick="Save">Save Invoice</button>
+    </div>
+</div>
+
+<div class="form-grid">
+    <div class="form-panel">
+        <div class="panel-header">Invoice Details</div>
+        <div class="form-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Invoice Number</label>
+                    <input class="apex-input" @bind="invoice.Number" placeholder="INV-0001" />
+                </div>
+                <div class="form-group">
+                    <label>Invoice Date</label>
+                    <input class="apex-input" type="date" @bind="invoice.Date" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Due Date</label>
+                    <input class="apex-input" type="date" @bind="invoice.DueDate" />
+                </div>
+                <div class="form-group">
+                    <label>Currency</label>
+                    <select class="apex-select" @bind="invoice.Currency">
+                        <option>USD</option><option>EUR</option><option>GBP</option><option>ZAR</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Customer / Vendor</label>
+                <select class="apex-select" @bind="invoice.Party">
+                    <option>GlobalTech Inc</option>
+                    <option>Retail Corp</option>
+                    <option>Startup Hub</option>
+                    <option>ABC Supplies</option>
+                    <option>XYZ Logistics</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea class="apex-input" rows="3" @bind="invoice.Notes"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-panel">
+        <div class="panel-header">
+            Line Items
+            <button class="btn-sm float-right" @onclick="AddLine">+ Add Line</button>
+        </div>
+        <table class="apex-table">
+            <thead><tr><th>Description</th><th>Qty</th><th>Unit Price</th><th>Total</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var line in invoice.Lines)
+                {
+                    <tr>
+                        <td><input class="apex-input" style="margin:0" @bind="line.Description" /></td>
+                        <td><input class="apex-input" style="margin:0;width:70px" type="number" @bind="line.Qty" @bind:after="Recalculate" /></td>
+                        <td><input class="apex-input" style="margin:0;width:100px" type="number" @bind="line.UnitPrice" @bind:after="Recalculate" /></td>
+                        <td>@((line.Qty * line.UnitPrice).ToString("C"))</td>
+                        <td><button class="btn-sm" @onclick="() => RemoveLine(line)">&#10005;</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="invoice-totals">
+            <div class="total-row"><span>Subtotal</span><span>@invoice.Subtotal.ToString("C")</span></div>
+            <div class="total-row"><span>Tax (15%)</span><span>@invoice.Tax.ToString("C")</span></div>
+            <div class="total-row total-grand"><span>Total</span><span>@invoice.Total.ToString("C")</span></div>
+        </div>
+    </div>
+</div>
+
+@if (saved) { <div class="alert-success">&#10003; Invoice saved successfully.</div> }
+
+@code {
+    [Parameter] public string? Id { get; set; }
+    [Inject] NavigationManager Nav { get; set; } = default!;
+
+    private bool IsNew => string.IsNullOrEmpty(Id);
+    private bool saved = false;
+
+    private InvoiceModel invoice = new()
+    {
+        Number = "INV-0001",
+        Date = DateTime.Today,
+        DueDate = DateTime.Today.AddDays(30),
+        Currency = "USD",
+        Party = "GlobalTech Inc",
+        Lines = new()
+        {
+            new() { Description = "Consulting Services - January", Qty = 10, UnitPrice = 850 },
+            new() { Description = "Software License (Annual)", Qty = 1, UnitPrice = 4200 },
+            new() { Description = "Support & Maintenance", Qty = 1, UnitPrice = 1200 },
+        }
+    };
+
+    private void AddLine() => invoice.Lines.Add(new());
+    private void RemoveLine(LineItem l) { invoice.Lines.Remove(l); Recalculate(); }
+    private void Recalculate() { invoice.Subtotal = invoice.Lines.Sum(l => l.Qty * l.UnitPrice); invoice.Tax = invoice.Subtotal * 0.15m; invoice.Total = invoice.Subtotal + invoice.Tax; }
+    private void Save() { Recalculate(); saved = true; }
+    private void Cancel() => Nav.NavigateTo("/finance/accounts-receivable");
+
+    protected override void OnInitialized() => Recalculate();
+
+    private class InvoiceModel
+    {
+        public string Number { get; set; } = "";
+        public DateTime Date { get; set; }
+        public DateTime DueDate { get; set; }
+        public string Currency { get; set; } = "USD";
+        public string Party { get; set; } = "";
+        public string Notes { get; set; } = "";
+        public List<LineItem> Lines { get; set; } = new();
+        public decimal Subtotal { get; set; }
+        public decimal Tax { get; set; }
+        public decimal Total { get; set; }
+    }
+    private class LineItem { public string Description { get; set; } = ""; public decimal Qty { get; set; } = 1; public decimal UnitPrice { get; set; } = 0; }
+}

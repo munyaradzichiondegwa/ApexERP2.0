@@ -1,0 +1,88 @@
+@page "/hr/employees"
+@attribute [Authorize]
+<PageTitle>Employees - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#128100; Employee Management</h1>
+    <button class="btn-primary" @onclick="() => showForm = true">+ Add Employee</button>
+</div>
+
+<div class="filter-bar">
+    <input class="apex-input" placeholder="Search employees..." @bind="search" />
+    <select class="apex-select" @bind="deptFilter">
+        <option value="">All Departments</option>
+        <option>Finance</option><option>HR</option><option>Operations</option><option>IT</option><option>Marketing</option>
+    </select>
+</div>
+
+<table class="apex-table">
+    <thead><tr><th>ID</th><th>Name</th><th>Department</th><th>Role</th><th>Status</th><th>Start Date</th></tr></thead>
+    <tbody>
+        @foreach (var emp in Filtered)
+        {
+            <tr>
+                <td>@emp.Id</td><td>@emp.Name</td><td>@emp.Department</td>
+                <td>@emp.Role</td>
+                <td><span class="badge @(emp.Active ? "badge-success" : "badge-danger")">@(emp.Active ? "Active" : "Inactive")</span></td>
+                <td>@emp.StartDate.ToString("yyyy-MM-dd")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (showForm)
+{
+    <div class="apex-modal-backdrop" @onclick="() => showForm = false">
+        <div class="apex-modal" @onclick:stopPropagation>
+            <div class="modal-header">Add Employee</div>
+            <div class="modal-body">
+                <label>Full Name</label><input class="apex-input" @bind="newEmp.Name" />
+                <label>Department</label><input class="apex-input" @bind="newEmp.Department" />
+                <label>Role</label><input class="apex-input" @bind="newEmp.Role" />
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" @onclick="Save">Save</button>
+                <button class="btn-secondary" @onclick="() => showForm = false">Cancel</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private string search = "", deptFilter = "";
+    private bool showForm = false;
+    private Employee newEmp = new();
+
+    private List<Employee> employees = new()
+    {
+        new() { Id="EMP001", Name="Alice Moyo", Department="Finance", Role="CFO", Active=true, StartDate=new DateTime(2020,3,1) },
+        new() { Id="EMP002", Name="Brian Chikwanda", Department="IT", Role="Lead Developer", Active=true, StartDate=new DateTime(2021,6,15) },
+        new() { Id="EMP003", Name="Carol Dube", Department="HR", Role="HR Manager", Active=true, StartDate=new DateTime(2019,9,1) },
+        new() { Id="EMP004", Name="David Ncube", Department="Operations", Role="Operations Lead", Active=true, StartDate=new DateTime(2022,1,10) },
+        new() { Id="EMP005", Name="Eva Mutasa", Department="Marketing", Role="Marketing Manager", Active=false, StartDate=new DateTime(2018,5,20) },
+    };
+
+    private IEnumerable<Employee> Filtered => employees.Where(e =>
+        (string.IsNullOrEmpty(search) || e.Name.Contains(search, StringComparison.OrdinalIgnoreCase)) &&
+        (string.IsNullOrEmpty(deptFilter) || e.Department == deptFilter));
+
+    private void Save()
+    {
+        newEmp.Id = $"EMP{employees.Count + 1:D3}";
+        newEmp.Active = true;
+        newEmp.StartDate = DateTime.Now;
+        employees.Add(newEmp);
+        newEmp = new();
+        showForm = false;
+    }
+
+    private class Employee
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Department { get; set; } = "";
+        public string Role { get; set; } = "";
+        public bool Active { get; set; }
+        public DateTime StartDate { get; set; }
+    }
+}

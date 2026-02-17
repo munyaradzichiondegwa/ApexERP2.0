@@ -1,0 +1,26 @@
+@inherits LayoutComponentBase
+
+<div class="apex-shell">
+    <aside class="apex-sidebar">
+        <div class="apex-logo">
+            <span class="logo-text">&#9650; ApexERP</span>
+        </div>
+        <NavMenu />
+    </aside>
+    <div class="apex-body">
+        <header class="apex-topbar">
+            <div class="topbar-left">
+                <span class="page-context">Enterprise Resource Planning</span>
+            </div>
+            <div class="topbar-right">
+                <LoginDisplay />
+            </div>
+        </header>
+        <main class="apex-content">
+            @Body
+        </main>
+        <footer class="apex-footer">
+            <span>&copy; @DateTime.Now.Year ApexERP. All rights reserved.</span>
+        </footer>
+    </div>
+</div>

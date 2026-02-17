@@ -1,0 +1,74 @@
+@page "/"
+
+<PageTitle>Dashboard - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>Dashboard</h1>
+    <span class="page-subtitle">Welcome back. Here is your enterprise overview.</span>
+</div>
+
+<div class="kpi-grid">
+    <div class="kpi-card kpi-finance">
+        <div class="kpi-icon">&#128200;</div>
+        <div class="kpi-body">
+            <span class="kpi-label">Total Revenue</span>
+            <span class="kpi-value">$4,820,300</span>
+            <span class="kpi-delta positive">&#9650; 12.4% vs last month</span>
+        </div>
+    </div>
+    <div class="kpi-card kpi-hr">
+        <div class="kpi-icon">&#128100;</div>
+        <div class="kpi-body">
+            <span class="kpi-label">Total Employees</span>
+            <span class="kpi-value">342</span>
+            <span class="kpi-delta positive">&#9650; 8 new this month</span>
+        </div>
+    </div>
+    <div class="kpi-card kpi-inventory">
+        <div class="kpi-icon">&#128230;</div>
+        <div class="kpi-body">
+            <span class="kpi-label">Stock Items</span>
+            <span class="kpi-value">12,840</span>
+            <span class="kpi-delta negative">&#9660; 3.1% movement</span>
+        </div>
+    </div>
+    <div class="kpi-card kpi-crm">
+        <div class="kpi-icon">&#127919;</div>
+        <div class="kpi-body">
+            <span class="kpi-label">Open Leads</span>
+            <span class="kpi-value">184</span>
+            <span class="kpi-delta positive">&#9650; 22 new this week</span>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <div class="dash-panel">
+        <div class="panel-header">Recent Transactions</div>
+        <table class="apex-table">
+            <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+                <tr><td>2025-01-15</td><td>Vendor Payment - ABC Supplies</td><td>$12,400</td><td><span class="badge badge-success">Paid</span></td></tr>
+                <tr><td>2025-01-14</td><td>Customer Invoice #1042</td><td>$8,750</td><td><span class="badge badge-warning">Pending</span></td></tr>
+                <tr><td>2025-01-13</td><td>Payroll - January</td><td>$184,200</td><td><span class="badge badge-success">Paid</span></td></tr>
+                <tr><td>2025-01-12</td><td>Purchase Order #2091</td><td>$33,000</td><td><span class="badge badge-info">Processing</span></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="dash-panel">
+        <div class="panel-header">Module Quick Access</div>
+        <div class="quick-links">
+            <a href="/finance/ledger" class="quick-link">&#128218; General Ledger</a>
+            <a href="/hr/employees" class="quick-link">&#128100; Employees</a>
+            <a href="/supply/purchase-orders" class="quick-link">&#128203; Purchase Orders</a>
+            <a href="/inventory/stock" class="quick-link">&#128230; Stock</a>
+            <a href="/crm/leads" class="quick-link">&#127919; Leads</a>
+            <a href="/admin/settings" class="quick-link">&#9881; Settings</a>
+        </div>
+    </div>
+</div>
+
+@code {
+}
+

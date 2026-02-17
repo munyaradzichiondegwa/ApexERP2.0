@@ -1,0 +1,18 @@
+@page "/supply/purchase-orders"
+@attribute [Authorize]
+<PageTitle>Purchase Orders - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#128203; Purchase Orders</h1>
+    <button class="btn-primary">+ Create PO</button>
+</div>
+
+<table class="apex-table">
+    <thead><tr><th>PO Number</th><th>Vendor</th><th>Date</th><th>Amount</th><th>Approver</th><th>Status</th></tr></thead>
+    <tbody>
+        <tr><td>PO-2091</td><td>Tech Vendors Ltd</td><td>2025-01-12</td><td>$33,000</td><td>Alice Moyo</td><td><span class="badge badge-info">Processing</span></td></tr>
+        <tr><td>PO-2090</td><td>ABC Supplies</td><td>2025-01-10</td><td>$4,200</td><td>Carol Dube</td><td><span class="badge badge-success">Approved</span></td></tr>
+        <tr><td>PO-2089</td><td>XYZ Logistics</td><td>2025-01-08</td><td>$8,800</td><td>Alice Moyo</td><td><span class="badge badge-success">Delivered</span></td></tr>
+        <tr><td>PO-2088</td><td>Global Parts Co</td><td>2025-01-05</td><td>$120,000</td><td>CEO</td><td><span class="badge badge-warning">Pending Approval</span></td></tr>
+    </tbody>
+</table>

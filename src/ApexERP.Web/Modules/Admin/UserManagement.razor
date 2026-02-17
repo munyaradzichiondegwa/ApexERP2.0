@@ -1,0 +1,75 @@
+@page "/admin/users"
+@attribute [Authorize]
+<PageTitle>User Management - ApexERP</PageTitle>
+<div class="apex-page-header">
+    <h1>&#128100; User Management</h1>
+    <button class="btn-primary" @onclick="() => showForm = true">+ Add User</button>
+</div>
+<div class="summary-row">
+    <div class="summary-card"><span>Total Users</span><strong>24</strong></div>
+    <div class="summary-card"><span>Active</span><strong class="text-positive">21</strong></div>
+    <div class="summary-card"><span>Inactive</span><strong class="text-negative">3</strong></div>
+    <div class="summary-card"><span>Roles</span><strong>6</strong></div>
+</div>
+<table class="apex-table">
+    <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Department</th><th>Last Login</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+        @foreach (var u in users)
+        {
+            <tr>
+                <td><div style="display:flex;align-items:center;gap:8px"><div class="profile-avatar" style="width:32px;height:32px;font-size:14px;flex-shrink:0">@u.Name[0]</div><strong>@u.Name</strong></div></td>
+                <td>@u.Email</td>
+                <td><span class="badge badge-info">@u.Role</span></td>
+                <td>@u.Department</td>
+                <td>@u.LastLogin.ToString("MMM dd, yyyy HH:mm")</td>
+                <td><span class="badge @(u.Active ? "badge-success" : "badge-danger")">@(u.Active ? "Active" : "Inactive")</span></td>
+                <td style="display:flex;gap:4px">
+                    <button class="btn-sm" @onclick="() => ToggleActive(u)">@(u.Active ? "Disable" : "Enable")</button>
+                    <button class="btn-sm">Edit</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@if (showForm)
+{
+    <div class="apex-modal-backdrop" @onclick="() => showForm = false">
+        <div class="apex-modal" @onclick:stopPropagation>
+            <div class="modal-header">Add New User</div>
+            <div class="modal-body">
+                <label>Full Name</label><input class="apex-input" @bind="newUser.Name" />
+                <label>Email Address</label><input class="apex-input" type="email" @bind="newUser.Email" />
+                <label>Role</label>
+                <select class="apex-select" @bind="newUser.Role">
+                    <option>Super Admin</option><option>Finance Manager</option><option>HR Manager</option><option>Operations Manager</option><option>Viewer</option><option>Data Entry</option>
+                </select>
+                <label>Department</label>
+                <select class="apex-select" @bind="newUser.Department">
+                    <option>Finance</option><option>HR</option><option>IT</option><option>Operations</option><option>Marketing</option>
+                </select>
+                <label>Temporary Password</label><input class="apex-input" type="password" @bind="newUser.Password" />
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" @onclick="Save">Create User</button>
+                <button class="btn-secondary" @onclick="() => showForm = false">Cancel</button>
+            </div>
+        </div>
+    </div>
+}
+@code {
+    private bool showForm = false;
+    private UserModel newUser = new();
+    private void ToggleActive(UserModel u) { u.Active = !u.Active; }
+    private void Save() { newUser.Active = true; newUser.LastLogin = DateTime.Now; users.Add(newUser); newUser = new(); showForm = false; }
+    private List<UserModel> users = new()
+    {
+        new() { Name="Alice Moyo", Email="alice.moyo@apexerp.local", Role="Super Admin", Department="Finance", LastLogin=DateTime.Now.AddMinutes(-30), Active=true },
+        new() { Name="Brian Chikwanda", Email="brian.c@apexerp.local", Role="IT Manager", Department="IT", LastLogin=DateTime.Now.AddHours(-2), Active=true },
+        new() { Name="Carol Dube", Email="carol.d@apexerp.local", Role="HR Manager", Department="HR", LastLogin=DateTime.Now.AddHours(-1), Active=true },
+        new() { Name="David Ncube", Email="david.n@apexerp.local", Role="Operations Manager", Department="Operations", LastLogin=DateTime.Now.AddDays(-1), Active=true },
+        new() { Name="Eva Mutasa", Email="eva.m@apexerp.local", Role="Viewer", Department="Marketing", LastLogin=DateTime.Now.AddDays(-30), Active=false },
+        new() { Name="Frank Banda", Email="frank.b@apexerp.local", Role="Finance Manager", Department="Finance", LastLogin=DateTime.Now.AddHours(-5), Active=true },
+        new() { Name="Grace Ndoro", Email="grace.n@apexerp.local", Role="Data Entry", Department="Operations", LastLogin=DateTime.Now.AddDays(-2), Active=true },
+    };
+    private class UserModel { public string Name{get;set;}=""; public string Email{get;set;}=""; public string Role{get;set;}="Viewer"; public string Department{get;set;}=""; public DateTime LastLogin{get;set;}=DateTime.Now; public bool Active{get;set;}=true; public string Password{get;set;}=""; }
+}

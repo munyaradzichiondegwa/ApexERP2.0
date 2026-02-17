@@ -1,0 +1,61 @@
+@page "/assets/maintenance"
+@attribute [Authorize]
+<PageTitle>Maintenance - ApexERP</PageTitle>
+<div class="apex-page-header">
+    <h1>&#128295; Maintenance Schedule</h1>
+    <button class="btn-primary" @onclick="() => showForm = true">+ Schedule Maintenance</button>
+</div>
+<table class="apex-table">
+    <thead><tr><th>Asset</th><th>Type</th><th>Scheduled</th><th>Technician</th><th>Cost</th><th>Status</th></tr></thead>
+    <tbody>
+        @foreach (var m in records)
+        {
+            <tr>
+                <td>@m.Asset</td><td>@m.Type</td>
+                <td>@m.Scheduled.ToString("MMM dd, yyyy")</td>
+                <td>@m.Technician</td><td>@m.Cost.ToString("C0")</td>
+                <td><span class="badge @StatusBadge(m.Status)">@m.Status</span></td>
+            </tr>
+        }
+    </tbody>
+</table>
+@if (showForm)
+{
+    <div class="apex-modal-backdrop" @onclick="() => showForm = false">
+        <div class="apex-modal" @onclick:stopPropagation>
+            <div class="modal-header">Schedule Maintenance</div>
+            <div class="modal-body">
+                <label>Asset</label>
+                <select class="apex-select" @bind="newRec.Asset">
+                    <option>Dell PowerEdge Server R740</option><option>Toyota Hilux 2023</option><option>CNC Milling Machine</option><option>Industrial Generator 500KVA</option>
+                </select>
+                <label>Maintenance Type</label>
+                <select class="apex-select" @bind="newRec.Type">
+                    <option>Preventive</option><option>Corrective</option><option>Inspection</option><option>Overhaul</option>
+                </select>
+                <label>Scheduled Date</label><input class="apex-input" type="date" @bind="newRec.Scheduled" />
+                <label>Technician</label><input class="apex-input" @bind="newRec.Technician" />
+                <label>Estimated Cost</label><input class="apex-input" type="number" @bind="newRec.Cost" />
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" @onclick="Save">Schedule</button>
+                <button class="btn-secondary" @onclick="() => showForm = false">Cancel</button>
+            </div>
+        </div>
+    </div>
+}
+@code {
+    private bool showForm = false;
+    private MaintenanceRecord newRec = new();
+    private string StatusBadge(string s) => s == "Completed" ? "badge-success" : s == "In Progress" ? "badge-warning" : s == "Overdue" ? "badge-danger" : "badge-info";
+    private void Save() { newRec.Status = "Scheduled"; records.Add(newRec); newRec = new(); showForm = false; }
+    private List<MaintenanceRecord> records = new()
+    {
+        new() { Asset="Cisco Network Switch Stack", Type="Corrective", Scheduled=DateTime.Now.AddDays(-2), Technician="TechPro Services", Cost=4500, Status="In Progress" },
+        new() { Asset="Industrial Generator 500KVA", Type="Preventive", Scheduled=DateTime.Now.AddDays(5), Technician="PowerGen Ltd", Cost=8000, Status="Scheduled" },
+        new() { Asset="CNC Milling Machine", Type="Inspection", Scheduled=DateTime.Now.AddDays(10), Technician="MachTech Inc", Cost=2500, Status="Scheduled" },
+        new() { Asset="Toyota Hilux 2023", Type="Preventive", Scheduled=DateTime.Now.AddDays(-10), Technician="AutoCare Garage", Cost=1200, Status="Completed" },
+        new() { Asset="HP LaserJet Printer Fleet", Type="Corrective", Scheduled=DateTime.Now.AddDays(-5), Technician="PrintTech Solutions", Cost=3200, Status="Overdue" },
+    };
+    private class MaintenanceRecord { public string Asset{get;set;}=""; public string Type{get;set;}="Preventive"; public DateTime Scheduled{get;set;}=DateTime.Today.AddDays(7); public string Technician{get;set;}=""; public decimal Cost{get;set;} public string Status{get;set;}="Scheduled"; }
+}

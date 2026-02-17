@@ -1,0 +1,75 @@
+@page "/hr/leave"
+@attribute [Authorize]
+<PageTitle>Leave Requests - ApexERP</PageTitle>
+<div class="apex-page-header">
+    <h1>Leave Management</h1>
+    <button class="btn-primary" @onclick="() => showForm = true">+ Request Leave</button>
+</div>
+<div class="summary-row">
+    <div class="summary-card"><span>Annual Leave Remaining</span><strong>14 days</strong></div>
+    <div class="summary-card"><span>Sick Leave Remaining</span><strong>8 days</strong></div>
+    <div class="summary-card"><span>Pending</span><strong>@requests.Count(r => r.Status == "Pending")</strong></div>
+    <div class="summary-card"><span>Approved This Year</span><strong>18 days</strong></div>
+</div>
+<table class="apex-table">
+    <thead><tr><th>Employee</th><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>
+        @foreach (var r in requests)
+        {
+            <tr>
+                <td>@r.Employee</td><td>@r.Type</td>
+                <td>@r.From.ToString("MMM dd")</td><td>@r.To.ToString("MMM dd")</td>
+                <td>@((r.To - r.From).Days + 1)</td>
+                <td>@r.Reason</td>
+                <td><span class="badge @BadgeClass(r.Status)">@r.Status</span></td>
+                <td>
+                    @if (r.Status == "Pending")
+                    {
+                        <button class="btn-sm" @onclick="() => Approve(r)">Approve</button>
+                        <button class="btn-sm" @onclick="() => Decline(r)">Reject</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@if (showForm)
+{
+    <div class="apex-modal-backdrop" @onclick="() => showForm = false">
+        <div class="apex-modal" @onclick:stopPropagation>
+            <div class="modal-header">New Leave Request</div>
+            <div class="modal-body">
+                <label>Employee</label>
+                <select class="apex-select" @bind="newReq.Employee">
+                    <option>Alice Moyo</option><option>Brian Chikwanda</option><option>Carol Dube</option><option>David Ncube</option>
+                </select>
+                <label>Leave Type</label>
+                <select class="apex-select" @bind="newReq.Type">
+                    <option>Annual Leave</option><option>Sick Leave</option><option>Maternity Leave</option>
+                </select>
+                <label>From Date</label><input class="apex-input" type="date" @bind="newReq.From" />
+                <label>To Date</label><input class="apex-input" type="date" @bind="newReq.To" />
+                <label>Reason</label><textarea class="apex-input" rows="2" @bind="newReq.Reason"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" @onclick="Submit">Submit</button>
+                <button class="btn-secondary" @onclick="() => showForm = false">Cancel</button>
+            </div>
+        </div>
+    </div>
+}
+@code {
+    private bool showForm = false;
+    private LeaveRequest newReq = new();
+    private string BadgeClass(string s) => s == "Approved" ? "badge-success" : s == "Rejected" ? "badge-danger" : "badge-warning";
+    private void Approve(LeaveRequest r) { r.Status = "Approved"; }
+    private void Decline(LeaveRequest r) { r.Status = "Rejected"; }
+    private void Submit() { newReq.Status = "Pending"; requests.Add(newReq); newReq = new(); showForm = false; }
+    private List<LeaveRequest> requests = new()
+    {
+        new() { Employee="Brian Chikwanda", Type="Annual Leave", From=DateTime.Now.AddDays(5), To=DateTime.Now.AddDays(10), Reason="Family vacation", Status="Pending" },
+        new() { Employee="Carol Dube", Type="Sick Leave", From=DateTime.Now.AddDays(-3), To=DateTime.Now.AddDays(-1), Reason="Medical appointment", Status="Approved" },
+        new() { Employee="David Ncube", Type="Annual Leave", From=DateTime.Now.AddDays(14), To=DateTime.Now.AddDays(21), Reason="Annual holiday", Status="Pending" },
+    };
+    private class LeaveRequest { public string Employee{get;set;}=""; public string Type{get;set;}="Annual Leave"; public DateTime From{get;set;}=DateTime.Today; public DateTime To{get;set;}=DateTime.Today.AddDays(1); public string Reason{get;set;}=""; public string Status{get;set;}="Pending"; }
+}

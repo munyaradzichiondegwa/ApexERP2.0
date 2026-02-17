@@ -1,0 +1,92 @@
+@page "/assets"
+@attribute [Authorize]
+<PageTitle>Asset Management - ApexERP</PageTitle>
+<div class="apex-page-header">
+    <h1>&#127970; Asset Management</h1>
+    <button class="btn-primary" @onclick="() => showForm = true">+ Register Asset</button>
+</div>
+<div class="summary-row">
+    <div class="summary-card"><span>Total Assets</span><strong>284</strong></div>
+    <div class="summary-card"><span>Total Value</span><strong>.2M</strong></div>
+    <div class="summary-card"><span>Depreciated Value</span><strong>.1M</strong></div>
+    <div class="summary-card"><span>Under Maintenance</span><strong class="text-negative">12</strong></div>
+</div>
+<div class="filter-bar">
+    <input class="apex-input" placeholder="Search assets..." @bind="search" />
+    <select class="apex-select" @bind="catFilter">
+        <option value="">All Categories</option>
+        <option>IT Equipment</option><option>Vehicles</option><option>Machinery</option><option>Furniture</option><option>Buildings</option>
+    </select>
+</div>
+<table class="apex-table">
+    <thead><tr><th>Asset ID</th><th>Name</th><th>Category</th><th>Location</th><th>Purchase Date</th><th>Cost</th><th>Current Value</th><th>Depreciation</th><th>Status</th></tr></thead>
+    <tbody>
+        @foreach (var a in Filtered)
+        {
+            <tr>
+                <td>@a.Id</td>
+                <td><strong>@a.Name</strong></td>
+                <td>@a.Category</td>
+                <td>@a.Location</td>
+                <td>@a.PurchaseDate.ToString("yyyy-MM-dd")</td>
+                <td>@a.Cost.ToString("C0")</td>
+                <td>@a.CurrentValue.ToString("C0")</td>
+                <td class="text-negative">-@((a.Cost - a.CurrentValue).ToString("C0"))</td>
+                <td><span class="badge @StatusBadge(a.Status)">@a.Status</span></td>
+            </tr>
+        }
+    </tbody>
+</table>
+@if (showForm)
+{
+    <div class="apex-modal-backdrop" @onclick="() => showForm = false">
+        <div class="apex-modal" @onclick:stopPropagation>
+            <div class="modal-header">Register New Asset</div>
+            <div class="modal-body">
+                <label>Asset Name</label><input class="apex-input" @bind="newAsset.Name" />
+                <label>Category</label>
+                <select class="apex-select" @bind="newAsset.Category">
+                    <option>IT Equipment</option><option>Vehicles</option><option>Machinery</option><option>Furniture</option><option>Buildings</option>
+                </select>
+                <label>Location</label><input class="apex-input" @bind="newAsset.Location" />
+                <label>Purchase Date</label><input class="apex-input" type="date" @bind="newAsset.PurchaseDate" />
+                <label>Purchase Cost</label><input class="apex-input" type="number" @bind="newAsset.Cost" />
+                <label>Useful Life (years)</label><input class="apex-input" type="number" @bind="newAsset.UsefulLife" />
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" @onclick="Save">Register</button>
+                <button class="btn-secondary" @onclick="() => showForm = false">Cancel</button>
+            </div>
+        </div>
+    </div>
+}
+@code {
+    private bool showForm = false;
+    private string search = "", catFilter = "";
+    private AssetModel newAsset = new();
+    private string StatusBadge(string s) => s == "Active" ? "badge-success" : s == "Under Maintenance" ? "badge-warning" : s == "Disposed" ? "badge-danger" : "badge-info";
+    private IEnumerable<AssetModel> Filtered => assets.Where(a =>
+        (string.IsNullOrEmpty(search) || a.Name.Contains(search, StringComparison.OrdinalIgnoreCase)) &&
+        (string.IsNullOrEmpty(catFilter) || a.Category == catFilter));
+    private void Save()
+    {
+        newAsset.Id = "AST" + (assets.Count + 1).ToString("D3");
+        newAsset.CurrentValue = newAsset.Cost;
+        newAsset.Status = "Active";
+        assets.Add(newAsset);
+        newAsset = new();
+        showForm = false;
+    }
+    private List<AssetModel> assets = new()
+    {
+        new() { Id="AST001", Name="Dell PowerEdge Server R740", Category="IT Equipment", Location="Server Room A", PurchaseDate=new DateTime(2022,3,1), Cost=48000, CurrentValue=32000, UsefulLife=5, Status="Active" },
+        new() { Id="AST002", Name="Toyota Hilux 2023", Category="Vehicles", Location="Parking Bay 3", PurchaseDate=new DateTime(2023,1,15), Cost=55000, CurrentValue=44000, UsefulLife=8, Status="Active" },
+        new() { Id="AST003", Name="CNC Milling Machine", Category="Machinery", Location="Workshop Floor 1", PurchaseDate=new DateTime(2020,6,1), Cost=180000, CurrentValue=108000, UsefulLife=10, Status="Active" },
+        new() { Id="AST004", Name="Executive Office Furniture Set", Category="Furniture", Location="Executive Floor", PurchaseDate=new DateTime(2021,9,1), Cost=24000, CurrentValue=16800, UsefulLife=7, Status="Active" },
+        new() { Id="AST005", Name="Cisco Network Switch Stack", Category="IT Equipment", Location="Server Room B", PurchaseDate=new DateTime(2023,4,1), Cost=28000, CurrentValue=22400, UsefulLife=5, Status="Under Maintenance" },
+        new() { Id="AST006", Name="Ford Transit Van", Category="Vehicles", Location="Parking Bay 7", PurchaseDate=new DateTime(2019,8,1), Cost=38000, CurrentValue=12000, UsefulLife=8, Status="Active" },
+        new() { Id="AST007", Name="Industrial Generator 500KVA", Category="Machinery", Location="Generator Room", PurchaseDate=new DateTime(2021,2,1), Cost=95000, CurrentValue=66500, UsefulLife=15, Status="Active" },
+        new() { Id="AST008", Name="HP LaserJet Printer Fleet", Category="IT Equipment", Location="Various", PurchaseDate=new DateTime(2022,11,1), Cost=12000, CurrentValue=7200, UsefulLife=5, Status="Under Maintenance" },
+    };
+    private class AssetModel { public string Id{get;set;}=""; public string Name{get;set;}=""; public string Category{get;set;}="IT Equipment"; public string Location{get;set;}=""; public DateTime PurchaseDate{get;set;}=DateTime.Today; public decimal Cost{get;set;} public decimal CurrentValue{get;set;} public int UsefulLife{get;set;}=5; public string Status{get;set;}="Active"; }
+}

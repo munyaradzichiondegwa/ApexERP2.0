@@ -1,0 +1,62 @@
+## .NET Core
+bin/
+obj/
+**/bin/
+**/obj/
+**/publish/
+**/PublishProfiles/
+
+## Visual Studio
+.vs/
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+.vscode/
+
+## JetBrains Rider
+.idea/
+*.sln.iml
+
+## NuGet packages
+packages/
+*.nupkg
+**/project.lock.json
+**/project.assets.json
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+
+## Test results
+TestResults/
+*.trx
+
+## User-specific files
+*.rsuser
+*.vspx
+*.psess
+*.vsp
+*.vspx
+
+## App settings (secrets)
+appsettings.*.json
+**/appsettings.*.json
+!appsettings.json
+
+## Node (if you use npm or frontend tooling)
+node_modules/
+npm-debug.log
+package-lock.json
+
+## Miscellaneous
+*.log
+*.tmp
+*.swp
+*.swo
+.DS_Store

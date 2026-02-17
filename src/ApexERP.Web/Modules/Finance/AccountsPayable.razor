@@ -1,0 +1,25 @@
+@page "/finance/accounts-payable"
+@attribute [Authorize]
+<PageTitle>Accounts Payable - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#128179; Accounts Payable</h1>
+    <button class="btn-primary">+ New Invoice</button>
+</div>
+
+<div class="summary-row">
+    <div class="summary-card"><span>Total Outstanding</span><strong>$284,400</strong></div>
+    <div class="summary-card"><span>Due This Week</span><strong class="text-negative">$42,000</strong></div>
+    <div class="summary-card"><span>Overdue</span><strong class="text-negative">$18,200</strong></div>
+    <div class="summary-card"><span>Paid This Month</span><strong class="text-positive">$122,000</strong></div>
+</div>
+
+<table class="apex-table">
+    <thead><tr><th>Vendor</th><th>Invoice #</th><th>Date</th><th>Due Date</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>
+        <tr><td>ABC Supplies</td><td>INV-2091</td><td>2025-01-10</td><td>2025-01-31</td><td>$12,400</td><td><span class="badge badge-warning">Pending</span></td><td><button class="btn-sm">Pay</button></td></tr>
+        <tr><td>XYZ Logistics</td><td>INV-2092</td><td>2025-01-08</td><td>2025-01-25</td><td>$8,800</td><td><span class="badge badge-danger">Overdue</span></td><td><button class="btn-sm">Pay</button></td></tr>
+        <tr><td>Tech Vendors Ltd</td><td>INV-2090</td><td>2025-01-05</td><td>2025-02-05</td><td>$33,000</td><td><span class="badge badge-info">Processing</span></td><td><button class="btn-sm">View</button></td></tr>
+        <tr><td>Office Pro</td><td>INV-2089</td><td>2025-01-01</td><td>2025-01-20</td><td>$1,200</td><td><span class="badge badge-success">Paid</span></td><td><button class="btn-sm">View</button></td></tr>
+    </tbody>
+</table>

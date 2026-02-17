@@ -1,0 +1,153 @@
+@page "/finance/approvals"
+@attribute [Authorize]
+<PageTitle>Finance Approvals - ApexERP</PageTitle>
+
+<div class="apex-page-header">
+    <h1>&#9989; Finance Approvals</h1>
+    <div class="tab-bar">
+        <button class="tab @(tab=="pending"?"tab-active":"")" @onclick='()=>tab="pending"'>Pending (@pending.Count)</button>
+        <button class="tab @(tab=="approved"?"tab-active":"")" @onclick='()=>tab="approved"'>Approved</button>
+        <button class="tab @(tab=="rejected"?"tab-active":"")" @onclick='()=>tab="rejected"'>Rejected</button>
+    </div>
+</div>
+
+@if (tab == "pending")
+{
+    @foreach (var item in pending)
+    {
+        <div class="approval-card">
+            <div class="approval-header">
+                <div>
+                    <span class="approval-type">@item.Type</span>
+                    <span class="approval-ref">@item.Reference</span>
+                </div>
+                <span class="approval-amount">@item.Amount.ToString("C")</span>
+            </div>
+            <div class="approval-body">
+                <div class="approval-meta">
+                    <span>&#128100; @item.RequestedBy</span>
+                    <span>&#128197; @item.Date.ToString("MMM dd, yyyy")</span>
+                    <span>&#127970; @item.Department</span>
+                </div>
+                <p class="approval-desc">@item.Description</p>
+            </div>
+            <div class="approval-footer">
+                <div class="approval-workflow">
+                    @foreach (var step in item.Steps)
+                    {
+                        <div class="workflow-step @step.Status">
+                            <div class="step-dot"></div>
+                            <div class="step-info">
+                                <span class="step-role">@step.Role</span>
+                                <span class="step-name">@step.Name</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="approval-actions">
+                    <button class="btn-secondary" @onclick="() => Reject(item)">&#10005; Reject</button>
+                    <button class="btn-primary" @onclick="() => Approve(item)">&#10003; Approve</button>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@if (tab == "approved")
+{
+    <table class="apex-table">
+        <thead><tr><th>Reference</th><th>Type</th><th>Amount</th><th>Requested By</th><th>Approved By</th><th>Date</th></tr></thead>
+        <tbody>
+            @foreach (var item in approved)
+            {
+                <tr>
+                    <td>@item.Reference</td><td>@item.Type</td><td>@item.Amount.ToString("C")</td>
+                    <td>@item.RequestedBy</td><td>Finance Manager</td><td>@item.Date.ToString("MMM dd")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (tab == "rejected")
+{
+    <table class="apex-table">
+        <thead><tr><th>Reference</th><th>Type</th><th>Amount</th><th>Requested By</th><th>Reason</th><th>Date</th></tr></thead>
+        <tbody>
+            @foreach (var item in rejected)
+            {
+                <tr>
+                    <td>@item.Reference</td><td>@item.Type</td><td>@item.Amount.ToString("C")</td>
+                    <td>@item.RequestedBy</td><td>Budget exceeded</td><td>@item.Date.ToString("MMM dd")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private string tab = "pending";
+
+    private void Approve(ApprovalItem item) { item.Steps.Last().Status = "complete"; approved.Add(item); pending.Remove(item); }
+    private void Reject(ApprovalItem item) { rejected.Add(item); pending.Remove(item); }
+
+    private List<ApprovalItem> approved = new()
+    {
+        new() { Reference="PO-2088", Type="Purchase Order", Amount=4200, RequestedBy="Carol Dube", Department="Operations", Date=DateTime.Now.AddDays(-3), Description="Office supplies restock for Q1 2025." },
+        new() { Reference="EXP-044", Type="Expense Claim", Amount=1840, RequestedBy="Brian Chikwanda", Department="IT", Date=DateTime.Now.AddDays(-5), Description="Conference attendance and travel expenses." },
+    };
+
+    private List<ApprovalItem> rejected = new()
+    {
+        new() { Reference="PO-2085", Type="Purchase Order", Amount=85000, RequestedBy="David Ncube", Department="Operations", Date=DateTime.Now.AddDays(-7), Description="Heavy machinery procurement." },
+    };
+
+    private List<ApprovalItem> pending = new()
+    {
+        new()
+        {
+            Reference = "PO-2091", Type = "Purchase Order", Amount = 33000,
+            RequestedBy = "David Ncube", Department = "Operations", Date = DateTime.Now.AddDays(-1),
+            Description = "Network infrastructure upgrade - 10 switches, 2 servers, cabling for new wing.",
+            Steps = new() {
+                new() { Role="Department Head", Name="Carol Dube", Status="complete" },
+                new() { Role="Finance Manager", Name="Alice Moyo", Status="current" },
+                new() { Role="CEO", Name="John Apex", Status="pending" },
+            }
+        },
+        new()
+        {
+            Reference = "EXP-048", Type = "Expense Claim", Amount = 4800,
+            RequestedBy = "Sarah Moyo", Department = "Marketing", Date = DateTime.Now,
+            Description = "Trade show booth rental and marketing materials for ExpoZim 2025.",
+            Steps = new() {
+                new() { Role="Department Head", Name="Mike Sales", Status="complete" },
+                new() { Role="Finance Manager", Name="Alice Moyo", Status="current" },
+            }
+        },
+        new()
+        {
+            Reference = "BUDGET-012", Type = "Budget Amendment", Amount = 120000,
+            RequestedBy = "Alice Moyo", Department = "Finance", Date = DateTime.Now.AddDays(-2),
+            Description = "Supplementary budget allocation for IT infrastructure modernisation project.",
+            Steps = new() {
+                new() { Role="CFO", Name="Alice Moyo", Status="complete" },
+                new() { Role="CEO", Name="John Apex", Status="current" },
+                new() { Role="Board", Name="Board of Directors", Status="pending" },
+            }
+        },
+    };
+
+    private class ApprovalItem
+    {
+        public string Reference { get; set; } = "";
+        public string Type { get; set; } = "";
+        public decimal Amount { get; set; }
+        public string RequestedBy { get; set; } = "";
+        public string Department { get; set; } = "";
+        public DateTime Date { get; set; }
+        public string Description { get; set; } = "";
+        public List<WorkflowStep> Steps { get; set; } = new() { new() { Role = "Manager", Name = "Pending", Status = "current" } };
+    }
+    private class WorkflowStep { public string Role { get; set; } = ""; public string Name { get; set; } = ""; public string Status { get; set; } = "pending"; }
+}
