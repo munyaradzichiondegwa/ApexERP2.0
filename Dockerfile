@@ -1,25 +1,29 @@
-# Stage 1: Build
+# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /app
 
 # Copy everything
 COPY . ./
 
-# Restore and publish only the Web project
+# Install wasm-tools (optional, improves size)
+RUN dotnet workload install wasm-tools
+
+# Restore and publish the Blazor WebAssembly project
 RUN dotnet restore src/ApexERP.Web/ApexERP.Web.csproj
 RUN dotnet publish src/ApexERP.Web/ApexERP.Web.csproj -c Release -o /out
 
-# Stage 2: Runtime
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
-WORKDIR /app
+# Serve stage using nginx
+FROM nginx:alpine AS final
+# Copy the published static files (wwwroot) to nginx's serving directory
+COPY --from=build /out/wwwroot /usr/share/nginx/html
 
-# Copy published output
-COPY --from=build /out .
+# Render expects the container to listen on the PORT environment variable (usually 10000)
+# We'll replace the default nginx port (80) with that value.
+# Create a custom nginx config that listens on the provided port.
+RUN echo "server { listen ${PORT:-10000}; server_name localhost; root /usr/share/nginx/html; try_files \$uri \$uri/ /index.html =404; }" > /etc/nginx/conf.d/default.conf
 
-# Tell ASP.NET to listen on the Render-provided port
-ENV ASPNETCORE_URLS=http://+:10000
-ENV ASPNETCORE_ENVIRONMENT=Production
-
+# Expose the port (Render will map it automatically)
 EXPOSE 10000
 
-ENTRYPOINT ["dotnet", "ApexERP.Web.dll"]
+# Start nginx in the foreground
+CMD ["nginx", "-g", "daemon off;"]
