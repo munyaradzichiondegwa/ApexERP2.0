@@ -5,7 +5,7 @@ WORKDIR /app
 # Copy everything
 COPY . ./
 
-# Install wasm-tools (optional, improves size)
+# Install wasm-tools for size optimization
 RUN dotnet workload install wasm-tools
 
 # Restore and publish the Blazor WebAssembly project
@@ -14,15 +14,18 @@ RUN dotnet publish src/ApexERP.Web/ApexERP.Web.csproj -c Release -o /out
 
 # Serve stage using nginx
 FROM nginx:alpine AS final
-# Copy the published static files (wwwroot) to nginx's serving directory
+# Copy the published static files (wwwroot) to nginx's document root
 COPY --from=build /out/wwwroot /usr/share/nginx/html
 
 # Render expects the container to listen on the PORT environment variable (usually 10000)
-# We'll replace the default nginx port (80) with that value.
-# Create a custom nginx config that listens on the provided port.
-RUN echo "server { listen ${PORT:-10000}; server_name localhost; root /usr/share/nginx/html; try_files \$uri \$uri/ /index.html =404; }" > /etc/nginx/conf.d/default.conf
+# Create an nginx config that listens on that port and supports SPA routing
+RUN echo "server { \
+    listen \${PORT:-10000}; \
+    server_name localhost; \
+    root /usr/share/nginx/html; \
+    try_files \$uri \$uri/ /index.html =404; \
+}" > /etc/nginx/conf.d/default.conf
 
-# Expose the port (Render will map it automatically)
 EXPOSE 10000
 
 # Start nginx in the foreground
