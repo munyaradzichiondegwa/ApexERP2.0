@@ -2,6 +2,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /app
 
+# Install Python (required by wasm-tools for native compilation)
+RUN apt-get update && apt-get install -y python3 && ln -s /usr/bin/python3 /usr/bin/python
+
 # Copy everything
 COPY . ./
 
