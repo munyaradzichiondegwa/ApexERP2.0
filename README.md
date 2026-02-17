@@ -114,5 +114,5 @@ This project is licensed under the MIT License – see the LICENSE file for deta
 Munyaradzi Chiondegwa
 GitHub: @munyaradzichiondegwa
 
-For more details, refer to the full proposal document (if available).
+For more details, refer to the full proposal document.
 "@ | Set-Content -Path README.md -Encoding UTF8
