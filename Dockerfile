@@ -2,36 +2,24 @@
     FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
     WORKDIR /app
     
-    # Copy project files first (better layer caching)
+    # Restore dependencies (caching)
     COPY src/ApexERP.Web/*.csproj src/ApexERP.Web/
     RUN dotnet restore src/ApexERP.Web/ApexERP.Web.csproj
     
-    # Copy everything else
+    # Copy all source and publish
     COPY . .
+    RUN dotnet publish src/ApexERP.Web/ApexERP.Web.csproj -c Release -o /publish
     
-    # Publish release build
-    RUN dotnet publish src/ApexERP.Web/ApexERP.Web.csproj \
-        -c Release \
-        -o /publish
+    # ---------- RUNTIME STAGE ----------
+    FROM nginx:alpine
+    # Remove default nginx files
+    RUN rm -rf /usr/share/nginx/html/*
     
-        # ---------- RUNTIME STAGE ----------
-            FROM nginx:alpine
-            WORKDIR /usr/share/nginx/html
-            
-            # Remove default nginx files
-            RUN rm -rf ./*
-            
-            # Copy everything from publish output
-            COPY --from=build /publish/ .
-            
-            # Move actual static content into html root if needed
-            RUN if [ -d "wwwroot" ]; then \
-                    cp -r wwwroot/* . && rm -rf wwwroot; \
-                fi
-            
-            COPY nginx.conf /etc/nginx/conf.d/default.conf
-            
-            EXPOSE 80
-            
-            CMD ["nginx", "-g", "daemon off;"]
-            
+    # Copy the entire wwwroot folder from the publish output
+    COPY --from=build /publish/wwwroot/ /usr/share/nginx/html/
+    
+    # Copy your custom nginx config
+    COPY nginx.conf /etc/nginx/conf.d/default.conf
+    
+    EXPOSE 80
+    CMD ["nginx", "-g", "daemon off;"]
